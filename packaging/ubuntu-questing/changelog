@@ -1,0 +1,186 @@
+cockpit-zfs (1.2.12-2questing) questing; urgency=medium
+
+  * Updates bulk snapshot deletion to show progress
+
+ -- Jordan Keough <jkeough@45drives.com>  Mon, 24 Nov 2025 05:13:48 -0400
+
+cockpit-zfs (1.2.12-1questing) questing; urgency=medium
+
+  * Adds snapshot deletion progress to UI when using bulk snapshot delete
+
+ -- Jordan Keough <jkeough@45drives.com>  Wed, 19 Nov 2025 09:02:42 -0400
+
+cockpit-zfs (1.2.11-1questing) questing; urgency=medium
+
+  * Removes unused python3-oauth dependencies and fixes a ref destructuring bug in
+    helpers>matchDiskByVdevOrPath func resulting in the error 'Disks.find is not
+    a function'
+
+ -- Jordan Keough <jkeough@45drives.com>  Thu, 09 Oct 2025 06:20:10 -0300
+
+cockpit-zfs (1.2.10-1questing) questing; urgency=medium
+
+  * Fixes malformed cockpit object in getUserCaps which caused root permissions to
+    not be recognized
+
+ -- Jordan Keough <jkeough@45drives.com>  Thu, 25 Sep 2025 08:33:47 -0300
+
+cockpit-zfs (1.2.9-2questing) questing; urgency=medium
+
+  * Fixes numerous issues relating to Disk population/data display and non-priv user
+    access
+
+ -- Jordan Keough <jkeough@45drives.com>  Mon, 22 Sep 2025 06:03:03 -0300
+
+cockpit-zfs (1.2.9-1questing) questing; urgency=medium
+
+  * Fixes Bugs: Drive slots 1-10+ would show with disk in 1-1 instead, fixes snapshot
+    list rendering breaking with excessive amount of snaps, layout issues in filesystems
+    tab, among other minor issues.
+
+ -- Jordan Keough <jkeough@45drives.com>  Fri, 19 Sep 2025 11:16:35 -0300
+
+cockpit-zfs (1.2.8-1questing) questing; urgency=medium
+
+  * Adds support for non-privledged users -> hides/disables any destructive actions
+    (module is read-only with exception for creating datasets)
+
+ -- Jordan Keough <jkeough@45drives.com>  Fri, 29 Aug 2025 12:18:28 -0300
+
+cockpit-zfs (1.2.7-1questing) questing; urgency=medium
+
+  * fixes bug where pool creation failure would not notify and stay in endless loading
+    state
+
+ -- Jordan Keough <jkeough@45drives.com>  Thu, 14 Aug 2025 13:24:44 -0300
+
+cockpit-zfs (1.2.6-1questing) questing; urgency=medium
+
+  * Fixes destroyPool error
+
+ -- Jordan Keough <jkeough@45drives.com>  Mon, 04 Aug 2025 10:18:12 -0300
+
+cockpit-zfs (1.2.5-1questing) questing; urgency=medium
+
+  * Updated debian dependency for proper sqlite package name
+
+ -- Jordan Keough <jkeough@45drives.com>  Tue, 24 Jun 2025 05:25:42 -0300
+
+cockpit-zfs (1.2.4-13questing) questing; urgency=medium
+
+  * manup
+  * fix email notification modal not showing connected as button
+  * manup
+  * manup
+
+ -- Rachit Hans <rhans@45drives.com>  Fri, 25 Apr 2025 09:31:21 -0300
+
+cockpit-zfs (1.2.4-12questing) questing; urgency=medium
+
+  * manup
+  * fixing smtp bug not allowing to send email through different port + fix error
+    message + building package
+  * manup
+
+ -- Rachit Hans <rhans@45drives.com>  Thu, 24 Apr 2025 12:48:55 -0300
+
+cockpit-zfs (1.2.4-11questing) questing; urgency=medium
+
+  * manup
+  * fixing ubuntu postinst to install googleauth package
+  * manup
+
+ -- Rachit Hans <rhans@45drives.com>  Thu, 24 Apr 2025 10:23:02 -0300
+
+cockpit-zfs (1.2.4-10questing) questing; urgency=medium
+
+  * build pakcage and changed heading of modal
+
+ -- Rachit Hans <rhans@45drives.com>  Wed, 16 Apr 2025 13:28:13 -0300
+
+cockpit-zfs (1.2.4-9questing) questing; urgency=medium
+
+  * fixed duplication notification and build package
+
+ -- Rachit Hans <rhans@45drives.com>  Wed, 16 Apr 2025 12:04:32 -0300
+
+cockpit-zfs (1.2.4-8questing) questing; urgency=medium
+
+  * build package for rocky linux 
+  * build package for rocky and ubuntu  linux 
+
+ -- Rachit Hans <rhans@45drives.com>  Wed, 16 Apr 2025 10:57:08 -0300
+
+cockpit-zfs (1.2.4-7questing) questing; urgency=medium
+
+  * build package and fixing email validation 
+
+ -- Rachit Hans <rhans@45drives.com>  Wed, 16 Apr 2025 10:31:07 -0300
+
+cockpit-zfs (1.2.4-6questing) questing; urgency=medium
+
+  * build package and dependencies install from manifest
+
+ -- Rachit Hans <rhans@45drives.com>  Wed, 16 Apr 2025 08:42:20 -0300
+
+cockpit-zfs (1.2.4-4questing) questing; urgency=medium
+
+  * added zfs-storage-check bash file
+
+ -- Rachit Hans <rhans@45drives.com>  Wed, 16 Apr 2025 07:49:46 -0300
+
+cockpit-zfs (1.2.4-1.2.3questing) questing; urgency=medium
+
+  * updated notification dropdown and postinst files for email
+
+ -- Rachit Hans <rhans@45drives.com>  Tue, 15 Apr 2025 12:56:58 -0300
+
+cockpit-zfs (1.2.3-2questing) questing; urgency=medium
+
+  * Fixes replacing disk issue where pools/disks were failing to show in UI during
+    replacement
+
+ -- Jordan Keough <jkeough@45drives.com>  Thu, 10 Apr 2025 08:23:24 -0300
+
+cockpit-zfs (1.2.2-6questing) questing; urgency=medium
+
+  * build packag + fix UI and email issues
+
+ -- Rachit Hans <rhans@45drives.com>  Tue, 08 Apr 2025 09:08:23 -0300
+
+cockpit-zfs (1.2.2-5questing) questing; urgency=medium
+
+  * fixing ubuntu posinst script
+
+ -- Rachit Hans <rhans@45drives.com>  Tue, 08 Apr 2025 08:04:21 -0300
+
+cockpit-zfs (1.2.2-4questing) questing; urgency=medium
+
+  * fixing ubuntu posinst script
+
+ -- Rachit Hans <rhans@45drives.com>  Tue, 08 Apr 2025 07:42:44 -0300
+
+cockpit-zfs (1.2.2-3questing) questing; urgency=medium
+
+  * build package to install msmtp
+
+ -- Rachit Hans <rhans@45drives.com>  Mon, 07 Apr 2025 14:07:36 -0300
+
+cockpit-zfs (1.2.2-2questing) questing; urgency=medium
+
+  * build package to checkup if new builds will have new method of installing msmtp
+
+ -- Rachit Hans <rhans@45drives.com>  Mon, 07 Apr 2025 12:51:54 -0300
+
+cockpit-zfs (1.2.2-1questing) questing; urgency=medium
+
+  * building package + added email functionality in zfs notifications
+
+ -- Rachit Hans <rhans@45drives.com>  Fri, 04 Apr 2025 09:52:56 -0300
+
+cockpit-zfs (1.2.1-1questing) questing; urgency=medium
+
+  * Added zfs alerts bell
+  * Initial build for questing
+
+ -- Rachit Hans <rhans@45drives.com>  Tue, 01 Apr 2025 08:30:56 -0300

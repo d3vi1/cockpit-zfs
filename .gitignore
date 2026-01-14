@@ -28,3 +28,7 @@ node_modules/
 
 # Generated files
 src/version.js
+
+# Agent artifacts
+AGENTS.md
+agent.md

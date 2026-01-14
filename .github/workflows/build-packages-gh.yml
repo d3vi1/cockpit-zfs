@@ -1,0 +1,94 @@
+name: Build Packages (GitHub)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - gh-actions
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu_codename: [questing]
+        packaging_dir: [ubuntu-questing]
+    container:
+      image: ubuntu:${{ matrix.ubuntu_codename }}
+    steps:
+      - name: Install checkout dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates \
+            curl \
+            git \
+            gnupg \
+            xz-utils
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential \
+            debhelper-compat \
+            dh-python \
+            dpkg-dev \
+            fakeroot \
+            moreutils \
+            python3 \
+            python3-jinja2 \
+            python3-pip
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Enable Corepack (Yarn)
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Build UI assets
+        run: make
+
+      - name: Prepare debian packaging
+        run: |
+          rm -rf debian
+          cp -a "packaging/${{ matrix.packaging_dir }}" debian
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from jinja2 import Environment, FileSystemLoader
+
+          manifest = json.loads(Path("manifest.json").read_text())
+          env = Environment(loader=FileSystemLoader("debian"))
+
+          for template_name, output_name in [("control.j2", "control"), ("copyright.j2", "copyright")]:
+              template_path = Path("debian") / template_name
+              if not template_path.exists():
+                  continue
+              template = env.get_template(template_name)
+              rendered = template.render(**manifest)
+              (Path("debian") / output_name).write_text(rendered)
+              template_path.unlink()
+          PY
+
+      - name: Build .deb
+        run: dpkg-buildpackage -us -uc -b
+
+      - name: Upload .deb artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-${{ matrix.ubuntu_codename }}
+          path: |
+            ${{ github.workspace }}/../*.deb
+            ${{ github.workspace }}/../*.buildinfo
+            ${{ github.workspace }}/../*.changes

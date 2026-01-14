@@ -63,6 +63,11 @@
             "group": "debian",
             "os_name": "debian-bookworm",
             "image": "ci.cr.45d.io/ci/simple/ubuntu-jammy:1"
+        },
+        {
+            "group": "ubuntu",
+            "os_name": "ubuntu-questing",
+            "image": "ci.cr.45d.io/ci/simple/ubuntu-questing:1"
         }
     ],
     "repos": [
