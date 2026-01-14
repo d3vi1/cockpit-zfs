@@ -9,6 +9,9 @@ on:
 jobs:
   build-deb:
     runs-on: ubuntu-latest
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      TERM: xterm-256color
     strategy:
       fail-fast: false
       matrix:
