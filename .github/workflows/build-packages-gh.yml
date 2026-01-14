@@ -41,9 +41,11 @@ jobs:
           apt-get install -y --no-install-recommends \
             build-essential \
             debhelper-compat \
+            default-jre-headless \
             dh-python \
             dpkg-dev \
             fakeroot \
+            graphviz \
             jq \
             moreutils \
             python3 \
