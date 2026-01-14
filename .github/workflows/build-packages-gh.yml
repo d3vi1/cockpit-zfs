@@ -41,6 +41,7 @@ jobs:
             dh-python \
             dpkg-dev \
             fakeroot \
+            jq \
             moreutils \
             python3 \
             python3-jinja2 \
@@ -89,6 +90,6 @@ jobs:
         with:
           name: deb-${{ matrix.ubuntu_codename }}
           path: |
-            ${{ github.workspace }}/../*.deb
-            ${{ github.workspace }}/../*.buildinfo
-            ${{ github.workspace }}/../*.changes
+            /__w/cockpit-zfs/*.deb
+            /__w/cockpit-zfs/*.buildinfo
+            /__w/cockpit-zfs/*.changes
