@@ -1,3 +1,10 @@
+cockpit-zfs (1.2.12-3questing) questing; urgency=medium
+
+  * CI: ignore cockpit.js in Vite HTML scan
+  * CI: install Java and Graphviz for plantuml-pipe during UI build
+
+ -- Razvan Corneliu <16434603+d3vi1@users.noreply.github.com>  Wed, 14 Jan 2026 17:15:00 +0000
+
 cockpit-zfs (1.2.12-2questing) questing; urgency=medium
 
   * Updates bulk snapshot deletion to show progress
