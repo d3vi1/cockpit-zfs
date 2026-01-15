@@ -89,6 +89,24 @@ def _dev_base(p: str) -> str:
     return s
 
 
+def _format_capacity_bytes(size_bytes: int) -> str:
+    if size_bytes is None:
+        return "0"
+    try:
+        size = float(size_bytes)
+    except Exception:
+        return "0"
+    units = ["B", "K", "M", "G", "T", "P"]
+    idx = 0
+    while size >= 1024 and idx < len(units) - 1:
+        size /= 1024.0
+        idx += 1
+    if idx == 0:
+        return str(int(size))
+    value = f"{size:.2f}".rstrip("0").rstrip(".")
+    return f"{value}{units[idx]}"
+
+
 def _bootlike_bases_from_lsblk() -> Set[str]:
     """
     Identify disks that look like OS/boot disks even if not mounted,
@@ -356,7 +374,7 @@ def _enrich_with_lsblk_and_udev(disks):
                 if "=" in line:
                     k, v = line.split("=", 1)
                     props[k.strip()] = v.strip()
-            # by-path: if lsdev text didn't have a good one
+            # by-path: fill if missing
             if (not d.get("phy_path")) or d["phy_path"] in ("unknown", "N/A"):
                 id_path = props.get("ID_PATH")
                 if id_path:
@@ -376,135 +394,118 @@ def _enrich_with_lsblk_and_udev(disks):
 
     return disks
 
-# ------------------------- lsdev paths -------------------------
-ANSI_RE = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+# ------------------------- UDisks2 paths -------------------------
+def _dbus_bytes_to_str(value) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, (bytes, bytearray)):
+        raw = bytes(value)
+    elif isinstance(value, (list, tuple)):
+        raw = bytes(value)
+    else:
+        return str(value)
+    if b"\x00" in raw:
+        raw = raw.split(b"\x00", 1)[0]
+    return raw.decode("utf-8", "ignore")
 
-def _parse_lsdev_text_table(text: str):
-    """
-    Parse `lsdev -n -dtcp` rows like:
-      | ** 1-1  (/dev/sda,/dev/disk/by-path/...,HDD,10.91 TiB) |
-    """
+
+def _symlinks_from_props(props) -> list:
+    symlinks = props.get("Symlinks", [])
+    out = []
+    for link in symlinks:
+        decoded = _dbus_bytes_to_str(link)
+        if decoded:
+            out.append(decoded)
+    return out
+
+
+def _get_udisks2_disks():
+    try:
+        import dbus
+    except Exception as e:
+        logger.warning(f"UDisks2 unavailable (dbus import failed): {e}")
+        return []
+
+    try:
+        bus = dbus.SystemBus()
+        obj = bus.get_object("org.freedesktop.UDisks2", "/org/freedesktop/UDisks2")
+        manager = dbus.Interface(obj, "org.freedesktop.DBus.ObjectManager")
+        objects = manager.GetManagedObjects()
+    except Exception as e:
+        logger.warning(f"UDisks2 unavailable (D-Bus error): {e}")
+        return []
+
+    byv_map = _map_by_vdev()
+    boot_bases = _get_boot_bases()
+
+    drives = {}
+    for path, ifaces in objects.items():
+        drive_props = ifaces.get("org.freedesktop.UDisks2.Drive")
+        if drive_props:
+            drives[path] = drive_props
+
     disks = []
-    nonmatch_sample = 0
-
-    for raw in text.splitlines():
-        # 0) Strip ANSI
-        raw = ANSI_RE.sub('', raw)
-
-        # 1) Normalize borders: remove leading/trailing '|' and whitespace
-        line = raw.strip()
-        if line.startswith('|'):
-            line = line[1:].rstrip()
-        if line.endswith('|'):
-            line = line[:-1].rstrip()
-        line = line.strip()
-
-        # 2) Skip ASCII borders / headers / legends
-        if (not line or
-            line.startswith("Storage Disk Info") or
-            line.startswith("Disk Controller") or
-            "Row " in line or
-            "Legend:" in line or
-            set(line) <= set("+-")  # lines like +-----+
-        ):
+    for path, ifaces in objects.items():
+        block_props = ifaces.get("org.freedesktop.UDisks2.Block")
+        if not block_props:
+            continue
+        if "org.freedesktop.UDisks2.Partition" in ifaces:
+            continue
+        if "org.freedesktop.UDisks2.Loop" in ifaces:
             continue
 
-        # 3) Remove non-color occupancy markers: "* " or "** "
-        line = re.sub(r'^\*{1,2}\s*', '', line)
-
-        # 4) We only care about rows that contain a tuple with a /dev/ path
-        if "(" not in line or "/dev/" not in line:
-            if nonmatch_sample < 5:
-                logger.debug(f"lsdev row ignored (no tuple/dev): {repr(line)}")
-                nonmatch_sample += 1
+        dev = _dbus_bytes_to_str(block_props.get("Device"))
+        if not dev.startswith("/dev/"):
             continue
 
-        # 5) Parse: 1-1 (/dev/sdx, /dev/disk/by-path/..., TYPE, CAPACITY)
-        m = re.match(
-            r'^\s*([0-9]+-[0-9]+)\s*'
-            r'\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([A-Za-z]+)\s*,\s*([^)]+)\s*\)\s*$',
-            line
-        )
-        if not m:
-            if nonmatch_sample < 5:
-                logger.debug(f"lsdev row did not match regex: {repr(line)}")
-                nonmatch_sample += 1
+        base = _dev_base(dev)
+        if base in boot_bases:
+            logger.info(f"Skipping boot-ancestor drive (UDisks2): {dev}")
             continue
 
-        bay_id, dev, by_path, dtype, capacity = m.groups()
-        base_name = os.path.basename(dev)
+        drive_path = block_props.get("Drive")
+        drive_props = drives.get(drive_path, {})
 
-        disk_data = {
-            "vdev_path": f"/dev/disk/by-vdev/{bay_id}",
-            "phy_path": by_path or "unknown",
+        symlinks = _symlinks_from_props(block_props)
+        phy_path = next((s for s in symlinks if s.startswith("/dev/disk/by-path/")), "unknown")
+        vdev_path = byv_map.get(base)
+        slot_name = os.path.basename(vdev_path) if vdev_path else None
+        pretty_name = slot_name or os.path.basename(base)
+
+        rotation_rate = int(drive_props.get("RotationRate", 0) or 0)
+        conn_bus = str(drive_props.get("ConnectionBus", "") or "").lower()
+        is_nvme = "nvme" in conn_bus or "nvme" in dev
+        dev_type = "NVMe" if is_nvme else ("HDD" if rotation_rate > 0 else "SSD")
+
+        model = (drive_props.get("Model") or "").strip() or "Unknown"
+        serial = (drive_props.get("Serial") or "").strip() or "Unknown"
+        size_bytes = int(block_props.get("Size", 0) or 0)
+        readonly = bool(int(block_props.get("ReadOnly", 0) or 0))
+
+        has_partitions = "org.freedesktop.UDisks2.PartitionTable" in ifaces
+        if not has_partitions:
+            has_partitions = _has_partitions_for(os.path.basename(base))
+
+        disks.append({
+            "vdev_path": vdev_path or "N/A",
+            "phy_path": phy_path,
             "sd_path": dev,
-            "name": bay_id,
-            "model": "Unknown",
-            "serial": "Unknown",
-            "capacity": capacity.strip(),
-            "type": dtype.strip(),
-            "usable": True,
+            "name": pretty_name,
+            "model": model,
+            "serial": serial,
+            "capacity": _format_capacity_bytes(size_bytes),
+            "usable": not readonly,
             "temp": "Unknown",
             "health": "Unknown",
-            "rotation_rate": 0 if dtype.strip().upper() in ("SSD", "NVME") else 0,
+            "type": dev_type,
+            "rotation_rate": 0 if is_nvme else rotation_rate,
             "power_on_count": None,
             "power_on_time": None,
-            "has_partitions": _has_partitions_for(base_name),
-        }
-        logger.debug(f"Discovered disk (lsdev-text): {disk_data['name']} {dev} {by_path}")
-        disks.append(disk_data)
+            "has_partitions": has_partitions,
+        })
 
-    logger.info(f"Disks discovered via lsdev (text): {len(disks)}")
+    logger.info(f"Disks discovered via UDisks2: {len(disks)}")
     return disks
-
-
-def get_lsdev_disks():
-    try:
-        boot_bases = _get_boot_bases()
-
-        if hasattr(os, "geteuid") and os.geteuid() == 0:
-            r = subprocess.run(["lsdev", "-jdHmtTsfcp"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-            if r.returncode != 0:
-                logger.error(f"lsdev JSON failed: {r.stderr}")
-                return None
-
-            data = json.loads(r.stdout or "{}")
-            disks = []
-            for row in data.get("rows", []) or []:
-                for d in row:
-                    if not d.get("occupied"):
-                        continue
-                    dev = d.get("dev")
-                    if not dev:
-                        continue
-                    if _dev_base(dev) in boot_bases:
-                        logger.info(f"Skipping boot-ancestor drive (lsdev JSON): {dev}")
-                        continue
-                    ...
-            logger.info(f"Disks discovered via lsdev (JSON): {len(disks)}")
-            return disks
-
-        # Non-root path
-        r = subprocess.run(["lsdev", "-ndtcp"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        if r.returncode != 0:
-            logger.warning(f"lsdev text failed ({r.returncode}): {r.stderr.strip()}")
-            return None
-
-        disks = _parse_lsdev_text_table(r.stdout)
-
-        if boot_bases:
-            before = len(disks)
-            disks = [d for d in disks if _dev_base(d.get("sd_path","")) not in boot_bases]
-            if len(disks) != before:
-                logger.info(f"Skipped {before - len(disks)} boot-ancestor drive(s) (lsdev text)")
-
-        # Enrich non-root details
-        disks = _enrich_with_lsblk_and_udev(disks)
-        return disks
-
-    except Exception as e:
-        logger.error(f"Exception in get_lsdev_disks: {e}")
-        return None
 
 # ------------------------- lsblk (NVMe & fallback) -------------------------
 def get_smartctl_data(device):
@@ -630,30 +631,6 @@ def get_lsblk_disks(nvme_only=False):
         logger.error(f"Exception in get_lsblk_disks: {e}")
         return []
 
-UNKNOWN = {None, "", "Unknown", "N/A"}
-
-PREFER_LSDEV = {
-    "vdev_path", "name", "phy_path", "type", "capacity", "rotation_rate",
-}
-
-def merge_overlay(base: dict, overlay: dict) -> dict:
-    out = dict(base)
-    # 1) Add keys lsblk doesn’t have
-    for k, v in overlay.items():
-        if k not in out and v not in UNKNOWN:
-            out[k] = v
-    # 2) Resolve conflicts
-    for k, v in overlay.items():
-        if v in UNKNOWN:
-            continue
-        if k in PREFER_LSDEV:
-            out[k] = v
-        else:
-            # keep existing unless it's unknown
-            if out.get(k) in UNKNOWN:
-                out[k] = v
-    return out
-
 # ------------------------- main -------------------------
 def main():
     try:
@@ -663,23 +640,14 @@ def main():
         logger.info("=" * 80)
         logger.info("Starting a new run of get-disks script")
 
-        # Always collect everything from lsblk first (covers NVMe + sda/sdb/...)
-        blk_all = get_lsblk_disks(nvme_only=False)
-        disks_by_base = { _dev_base(d["sd_path"]): d for d in blk_all }
-
-        lsdev_disks = get_lsdev_disks() or []
-        for d in lsdev_disks:
-            base = _dev_base(d.get("sd_path",""))
-            if not base:
-                continue
-            disks_by_base[base] = merge_overlay(disks_by_base.get(base, {}), d)
-
-        all_disks = list(disks_by_base.values())
+        all_disks = _get_udisks2_disks()
+        if not all_disks:
+            logger.info("UDisks2 returned no disks; falling back to lsblk.")
+            all_disks = get_lsblk_disks(nvme_only=False)
 
         # FINAL SAFETY FILTER: remove any boot-ancestor devices
         boot_bases_final = _get_boot_bases()
         before = len(all_disks)
-        # all_disks = [d for d in all_disks if _dev_base(d.get("sd_path","")) not in boot_bases_final]
         all_disks = [d for d in all_disks if _dev_base(d.get("sd_path","")) not in boot_bases_final]
 
         if len(all_disks) != before:
