@@ -29,6 +29,6 @@ node_modules/
 # Generated files
 src/version.js
 
-# Agent artifacts
+# Agent artifacts (local-only)
 AGENTS.md
 agent.md
