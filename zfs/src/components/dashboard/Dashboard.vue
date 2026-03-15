@@ -13,7 +13,7 @@
 					<h6 class="mt-2"> Total Effective Space: {{ totalEffectivePoolSpace }} </h6>
 				</div>
 				<div class="p-2 flex justify-end">
-					<button class="btn btn-secondary" @click="refreshAllData">
+					<button class="pf-v5-c-button pf-m-plain" aria-label="Refresh pools" @click="refreshAllData">
 						<ArrowPathIcon class="h-5 w-5 m-1" aria-hidden="true"/>
 					</button>
 				</div>
@@ -30,7 +30,7 @@
 					<span class="font-semibold text-lg mt-1">No Pools Found</span>
 				</div>
 				<div class="p-2 flex justify-end col-start-3">
-					<button class="btn btn-primary" @click="refreshAllData">
+					<button class="pf-v5-c-button pf-m-plain" aria-label="Refresh pools" @click="refreshAllData">
 						<ArrowPathIcon class="h-5 w-5" aria-hidden="true"/>
 					</button>
 				</div>

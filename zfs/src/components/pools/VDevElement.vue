@@ -1,100 +1,59 @@
 <template>
-	<div class="">
-		<div class="">
-			<Disclosure v-slot="{ open }" :defaultOpen="true">
-				<DisclosureButton
-					class="grid grid-cols-8 grid-flow-cols w-full text-center bg-primary text-sm text-white">
-					<div name="vdev-chevron" class="p-1 mt-1 col-span-1 flex flex-row justify-center text-center">
-						<ChevronUpIcon class="-mt-2 h-10 w-10 text-white transition-all duration-200 transform"
-							:class="{ 'rotate-90': !open, 'rotate-180': open, }" />
-					</div>
-					<div name="vdev-name" class="p-1 mt-1 col-span-1 text-base text-left" :class="truncateText"
-						:title="props.vDev.name">{{ props.vDev.name }}</div>
-					<div name="vdev-status" class="p-1 mt-1 col-span-1 font-semibold text-base"
-						:class="[formatStatus(props.vDev.status), truncateText]" :title="props.vDev.status">{{
-						props.vDev.status }}</div>
-					<div name="vdev-type" class="p-1 mt-1 col-span-1 text-base" :class="truncateText"
-						:title="upperCaseWord(props.vDev.type) + ' Device'">{{ upperCaseWord(props.vDev.type) }} Device
-					</div>
-					<div name="vdev-read-err" class="p-1 mt-1 col-span-1 text-base" :class="truncateText"
-						:title="props.vDev.stats!.read_errors + ' Read Errors'">{{ props.vDev.stats!.read_errors }} Read
-						Errors</div>
-					<div name="vdev-write-err" class="p-1 mt-1 col-span-1 text-base" :class="truncateText"
-						:title="props.vDev.stats!.write_errors + ' Write Errors'">{{ props.vDev.stats!.write_errors }}
-						Write Errors</div>
-					<div name="vdev-checksum-err" class="p-1 mt-1 col-span-1 text-base" :class="truncateText"
-						:title="props.vDev.stats!.checksum_errors + ' Checksum Errors'">{{
-						props.vDev.stats!.checksum_errors }} Checksum Errors</div>
-					<div name="vdev-menu"
-						class="col-span-1 relative p-1 pl-3 pr-4 text-right font-medium sm:pr-6 lg:pr-8 justify-self-end justify-items-end">
-						<Menu as="div" class="relative inline-block text-right">
-							<div>
-								<MenuButton @click.stop :disabled="!canDestructive" :aria-disabled="!canDestructive"
-									:title="!canDestructive ? 'Requires administrative privileges' : ''" :class="[
-										'flex items-center rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-gray-100',
-										canDestructive ? 'bg-primary hover:text-white cursor-pointer'
-											: 'bg-primary/60 text-muted cursor-not-allowed'
-									]">
-									<span class="sr-only">Open options</span>
-									<EllipsisVerticalIcon class="w-5" aria-hidden="true" />
-								</MenuButton>
-							</div>
-
-							<transition enter-active-class="transition ease-out duration-100"
-								enter-from-class="transform opacity-0 scale-95"
-								enter-to-class="transform opacity-100 scale-100"
-								leave-active-class="transition ease-in duration-75"
-								leave-from-class="transform opacity-100 scale-100"
-								leave-to-class="transform opacity-0 scale-95">
-								<MenuItems @click.stop
-									class="absolute right-0 z-10 w-max origin-top-right rounded-md bg-primary shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-									<div class="py-1">
-										<!-- <MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click.stop="clearVDevErrors(props.pool.name, props.vDev.name)" :class="[active ? 'bg-primary text-white' : 'text-white', 'block px-4 py-2 text-sm']">Clear Virtual Device Errors</a>
-										</MenuItem> -->
-										<MenuItem
-											v-if="pool.vdevs.length !== 1 && vDev !== pool.vdevs[0] && !vDev.type.includes('raid')"
-											as="div" v-slot="{ active }">
-										<a href="#" @click="removeVDev(props.pool, props.pool.vdevs[vDevIdx])"
-											:class="[active ? 'bg-danger text-white' : 'text-white', 'block px-4 py-2 text-sm']">Remove
-											Virtual Device</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }">
-										<a href="#" @click="showAttachDisk(props.pool, props.vDev)"
-											:class="[active ? 'bg-primary text-white' : 'text-white', 'block px-4 py-2 text-sm']">Attach
-											Disk</a>
-										</MenuItem>
-									</div>
-								</MenuItems>
-							</transition>
-						</Menu>
-					</div>
-				</DisclosureButton>
-				<DisclosurePanel>
-					<table class="min-w-full bg-secondary text-default">
-						<thead>
-							<tr :key="props.vDevIdx" class=" grid grid-cols-9 font-semibold text-white">
-								<!-- <th class="relative py-2 pl-3 pr-4 sm:pr-6 lg:pr-8 col-span-1">
-									<span class="sr-only"></span>
-								</th> -->
-								<th class="py-2 col-span-2" :class="truncateText" title="Disk">Disk</th>
-								<th class="py-2 col-span-1" :class="truncateText" title="State">State</th>
-								<th class="py-2 col-span-1" :class="truncateText" title="Type">Type</th>
-								<th class="py-2 col-span-1" :class="truncateText" title="Temperature">Temperature</th>
-								<th class="py-2 col-span-1" :class="truncateText" title="Capacity">Capacity</th>
-								<th class="py-2 col-span-2" :class="truncateText" title="Message">Message</th>
-								<th class="relative py-2 pl-3 pr-4 sm:pr-6 lg:pr-8 col-span-1">
-									<span class="sr-only"></span>
-								</th>
-							</tr>
-						</thead>
-					</table>
-					<div v-for="disk, diskIdx in props.vDev.disks" :key="diskIdx" class="">
-						<DiskElement :pool="poolData[props.poolIdx]" :poolIdx="props.poolIdx" :vDev="props.vDev"
-							:vDevIdx="props.vDevIdx" :disk="disk" :diskIdx="diskIdx" ref="diskElement" />
-					</div>
-				</DisclosurePanel>
-			</Disclosure>
+	<div>
+		<!-- VDev header row (compound expandable) -->
+		<div class="flex w-full text-center bg-primary text-sm text-white items-center" style="cursor: pointer;" @click="isExpanded = !isExpanded">
+			<div class="p-1 flex-none" style="width:3rem;">
+				<button class="pf-v5-c-button pf-m-plain text-white" @click.stop="isExpanded = !isExpanded"
+					:aria-expanded="isExpanded">
+					<svg :style="{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"
+						viewBox="0 0 256 512" fill="currentColor" aria-hidden="true" style="width:1em;height:1em;">
+						<path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/>
+					</svg>
+				</button>
+			</div>
+			<div class="p-1 flex-1 text-base text-left" :class="truncateText"
+				:title="props.vDev.name">{{ props.vDev.name }}</div>
+			<div class="p-1 flex-1 font-semibold text-base"
+				:class="[formatStatus(props.vDev.status), truncateText]" :title="props.vDev.status">{{
+				props.vDev.status }}</div>
+			<div class="p-1 flex-1 text-base" :class="truncateText"
+				:title="upperCaseWord(props.vDev.type) + ' Device'">{{ upperCaseWord(props.vDev.type) }} Device
+			</div>
+			<div class="p-1 flex-1 text-base" :class="truncateText"
+				:title="props.vDev.stats!.read_errors + ' Read Errors'">{{ props.vDev.stats!.read_errors }} Read
+				Errors</div>
+			<div class="p-1 flex-1 text-base" :class="truncateText"
+				:title="props.vDev.stats!.write_errors + ' Write Errors'">{{ props.vDev.stats!.write_errors }}
+				Write Errors</div>
+			<div class="p-1 flex-1 text-base" :class="truncateText"
+				:title="props.vDev.stats!.checksum_errors + ' Checksum Errors'">{{
+				props.vDev.stats!.checksum_errors }} Checksum Errors</div>
+			<div class="p-1 flex-none text-right pr-4" style="width:3rem;" @click.stop>
+				<PfDropdownMenu :items="vdevMenuItems" :kebab="true" />
+			</div>
+		</div>
+		<!-- VDev expanded content -->
+		<div v-if="isExpanded">
+			<table class="min-w-full bg-secondary text-default">
+				<thead>
+					<tr :key="props.vDevIdx" class="pf-v5-c-table__tr font-semibold text-white">
+						<th class="pf-v5-c-table__th py-2" :class="truncateText" title="Disk" style="width:22%;">Disk</th>
+						<th class="pf-v5-c-table__th py-2" :class="truncateText" title="State">State</th>
+						<th class="pf-v5-c-table__th py-2" :class="truncateText" title="Type">Type</th>
+						<th class="pf-v5-c-table__th py-2" :class="truncateText" title="Temperature">Temperature</th>
+						<th class="pf-v5-c-table__th py-2" :class="truncateText" title="Capacity">Capacity</th>
+						<th class="pf-v5-c-table__th py-2" :class="truncateText" title="Message" style="width:22%;">Message</th>
+						<th class="pf-v5-c-table__th py-2" style="width:3rem;">
+							<span class="sr-only">Actions</span>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<DiskElement v-for="(disk, diskIdx) in props.vDev.disks" :key="diskIdx"
+						:pool="poolData[props.poolIdx]" :poolIdx="props.poolIdx" :vDev="props.vDev"
+						:vDevIdx="props.vDevIdx" :disk="disk" :diskIdx="diskIdx" ref="diskElement" />
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<div v-if="showAttachDiskModal">
@@ -110,12 +69,12 @@
 
 </template>
 <script setup lang="ts">
-import { ref, inject, Ref, watch, provide, onMounted } from "vue";
-import { EllipsisVerticalIcon, ChevronUpIcon } from '@heroicons/vue/24/outline';
-import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
+import { ref, inject, Ref, watch, provide, onMounted, computed } from "vue";
 import { clearErrors, removeVDevFromPool, setRefreservation } from "../../composables/pools";
 import { formatStatus, upperCaseWord,  } from '../../composables/helpers';
 import DiskElement from '../pools/DiskElement.vue';
+import PfDropdownMenu from "../pf/PfDropdownMenu.vue";
+import type { DropdownMenuItem } from "../pf/PfDropdownMenu.vue";
 import { ZPool, VDev, VDevDisk, ZFSFileSystemInfo } from "@45drives/houston-common-lib";
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
 import { Activity, PoolScanObjectGroup, PoolDiskStats, ConfirmationCallback } from "../../types";
@@ -137,6 +96,25 @@ const selectedPool = ref<ZPool>();
 const selectedVDev = ref<VDev>();
 
 const operationRunning = ref(false);
+
+// PF expandable state (replaces HeadlessUI Disclosure)
+const isExpanded = ref(true);
+
+// Computed menu items for PfDropdownMenu (replaces HeadlessUI Menu)
+const vdevMenuItems = computed<DropdownMenuItem[]>(() => {
+	const items: DropdownMenuItem[] = [];
+
+	if (canDestructive.value) {
+		if (props.pool.vdevs.length !== 1 && props.vDev !== props.pool.vdevs[0] && !props.vDev.type.includes('raid')) {
+			items.push({ label: 'Remove Virtual Device', action: () => removeVDev(props.pool, props.pool.vdevs[props.vDevIdx]) });
+		}
+		items.push({ label: 'Attach Disk', action: () => showAttachDisk(props.pool, props.vDev) });
+	} else {
+		items.push({ label: 'Attach Disk', action: () => showAttachDisk(props.pool, props.vDev), disabled: true, tooltip: 'Requires administrative privileges' });
+	}
+
+	return items;
+});
 
 
 /////////////// Loading/Refreshing //////////////////

@@ -1,11 +1,10 @@
 <template>
-	<OldModal @close="closeModal" :close-on-background-click="false" :isOpen="showPoolDetails" :marginTop="'mt-28'"
-		:width="'w-7/12'" :minWidth="'min-w-7/12'" :initialFocus="null">
-		<template v-slot:title>
+	<PfModal :isOpen="showPoolDetails" :title="'Pool Details - ' + props.pool.name" variant="large"
+		@close="closeModal">
+		<div>
 			<Navigation :navigationItems="navigation" :currentNavigationItem="currentNavigationItem"
 				:navigationCallback="navigationCallback" :show="show" />
-		</template>
-		<template v-slot:content>
+		</div>
 			<div v-if="navTag == 'stats'">
 				<div class="mt-6 grid grid-cols-3 grid-rows-2 text-default">
 					<PoolCapacity :id="getIdKey('pool-visual-capacity')" :fillColor="capacityColor"
@@ -118,227 +117,83 @@
 
 					<!-- auto-expand -->
 					<div class="col-span-1 col-start-1 row-start-3">
-						<label :for="getIdKey('settings-pool-auto-expand')"
-							class="mt-1 block text-sm leading-6 text-default">Auto-Expand Pool</label>
-						<Switch v-model="poolConfig.properties.autoExpand" :id="getIdKey('settings-pool-auto-expand')"
-							:disabled="settingsLocked" :aria-disabled="settingsLocked"
-							:title="settingsLocked ? 'Requires administrative privileges' : ''" :class="[
-								settingsLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-								poolConfig.properties.autoExpand ? 'bg-secondary' : 'bg-accent',
-								'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2'
-							]">
-							<span class="sr-only">Use setting</span>
-							<span
-								:class="[poolConfig.properties.autoExpand ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-								<span
-									:class="[poolConfig.properties.autoExpand ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-										<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-											stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-									</svg>
-								</span>
-								<span
-									:class="[poolConfig.properties.autoExpand ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-										<path
-											d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-									</svg>
-								</span>
-							</span>
-						</Switch>
+						<PfSwitch v-model="poolConfig.properties.autoExpand"
+							:id="getIdKey('settings-pool-auto-expand')"
+							label="Auto-Expand Pool" />
 					</div>
 
 					<!-- auto-replace -->
 					<div class="col-span-1 col-start-2 row-start-3">
-						<label :for="getIdKey('settings-pool-auto-replace')"
-							class="mt-1 block text-sm leading-6 text-default">Auto-Replace Drives</label>
-						<Switch v-model="poolConfig.properties.autoReplace" :id="getIdKey('settings-pool-auto-replace')"
-							:disabled="settingsLocked" :aria-disabled="settingsLocked"
-							:title="settingsLocked ? 'Requires administrative privileges' : ''"
-							:class="[
-								settingsLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer', poolConfig.properties.autoReplace ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-							<span class="sr-only">Use setting</span>
-							<span
-								:class="[poolConfig.properties.autoReplace ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-								<span
-									:class="[poolConfig.properties.autoReplace ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-										<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-											stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-									</svg>
-								</span>
-								<span
-									:class="[poolConfig.properties.autoReplace ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-										<path
-											d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-									</svg>
-								</span>
-							</span>
-						</Switch>
+						<PfSwitch v-model="poolConfig.properties.autoReplace"
+							:id="getIdKey('settings-pool-auto-replace')"
+							label="Auto-Replace Drives" />
 					</div>
 
 					<!-- display snapshots in filesystem list -->
 					<div class="col-span-2 col-start-3 row-start-3">
-						<label :for="getIdKey('settings-pool-display-snapshots')"
-							class="mt-1 block text-sm leading-6 text-default">List Snapshots With File Systems</label>
-						<Switch v-model="poolConfig.properties.listSnapshots"
-							:id="getIdKey('settings-pool-display-snapshots')" :disabled="settingsLocked"
-							:aria-disabled="settingsLocked"
-							:title="settingsLocked ? 'Requires administrative privileges' : ''"
-							:class="[
-								settingsLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer', poolConfig.properties.listSnapshots ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-							<span class="sr-only">Use setting</span>
-							<span
-								:class="[poolConfig.properties.listSnapshots ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-								<span
-									:class="[poolConfig.properties.listSnapshots ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-										<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-											stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-									</svg>
-								</span>
-								<span
-									:class="[poolConfig.properties.listSnapshots ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-										<path
-											d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-									</svg>
-								</span>
-							</span>
-						</Switch>
+						<PfSwitch v-model="poolConfig.properties.listSnapshots"
+							:id="getIdKey('settings-pool-display-snapshots')"
+							label="List Snapshots With File Systems" />
 					</div>
 
 					<!-- delegation (Allow non-privileged user access based on the dataset permissions)-->
 					<div class="col-span-2 col-start-1 row-start-4">
-						<div class="col-span-1 flex flex-row gap-2 mt-1 text-center leading-6">
-							<label :for="getIdKey('settings-pool-delegation')"
-								class="block text-sm text-default">Delegation</label>
-							<p class="text-xs text-muted mt-0.5">(Access based on dataset permissions)</p>
-						</div>
-						<Switch :initialFocus="null" v-model="poolConfig.properties.delegation"
-							:id="getIdKey('settings-pool-delegation')" :disabled="settingsLocked"
-							:aria-disabled="settingsLocked"
-							:title="settingsLocked ? 'Requires administrative privileges' : ''"
-							:class="[
-								settingsLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer', poolConfig.properties.delegation ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-							<span class="sr-only">Use setting</span>
-							<span
-								:class="[poolConfig.properties.delegation ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-								<span
-									:class="[poolConfig.properties.delegation ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-										<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-											stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-									</svg>
-								</span>
-								<span
-									:class="[poolConfig.properties.delegation ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-										<path
-											d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-									</svg>
-								</span>
-							</span>
-						</Switch>
+						<PfSwitch v-model="poolConfig.properties.delegation"
+							:id="getIdKey('settings-pool-delegation')"
+							label="Delegation" />
+						<p class="text-xs text-muted mt-0.5">(Access based on dataset permissions)</p>
 					</div>
 
 					<!-- auto-trim -->
 					<div v-if="props.pool.diskType == 'SSD' || props.pool.diskType == 'Hybrid'"
 						class="col-span-1 col-start-3 row-start-4">
-						<label :for="getIdKey('settings-pool-auto-trim')"
-							class="mt-1 block text-sm leading-6 text-default">Auto-TRIM Pool</label>
-						<Switch v-model="poolConfig.properties.autoTrim" :id="getIdKey('settings-pool-auto-trim')"
-							:disabled="settingsLocked" :aria-disabled="settingsLocked"
-							:title="settingsLocked ? 'Requires administrative privileges' : ''"
-							:class="[
-								settingsLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer', poolConfig.properties.autoTrim ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-							<span class="sr-only">Use setting</span>
-							<span
-								:class="[poolConfig.properties.autoTrim ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-								<span
-									:class="[poolConfig.properties.autoTrim ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-										<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-											stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-									</svg>
-								</span>
-								<span
-									:class="[poolConfig.properties.autoTrim ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-										<path
-											d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-									</svg>
-								</span>
-							</span>
-						</Switch>
+						<PfSwitch v-model="poolConfig.properties.autoTrim"
+							:id="getIdKey('settings-pool-auto-trim')"
+							label="Auto-TRIM Pool" />
 					</div>
 
 				</div>
 			</div>
-		</template>
-		<template v-slot:footer>
+		<template #footer>
 			<div class="button-group-row w-full justify-between">
 				<div class="mt-2 justify-self-start">
 					<button @click="showPoolDetails = false" :id="getIdKey('close-details-btn')"
-						name="close-details-btn" class="mt-1 btn btn-danger">Close</button>
+						name="close-details-btn" class="pf-v5-c-button pf-m-danger mt-1">Close</button>
 				</div>
-				<div class="justofy-self-center">
+				<div class="justify-self-center">
 					<div class="button-group-row mt-2 justify-self-center">
 						<p class="text-danger" v-if="commentFeedback">{{ commentFeedback }}</p>
-
 					</div>
 				</div>
 				<div class="justify-self-end">
 					<div v-if="navTag == 'topology'">
 						<div class="mt-2">
 							<button v-if="canDestructive" @click="addVDevButton()" :id="getIdKey('add-vdev-btn')"
-								name="add-vdev-btn" class="mt-1 btn btn-primary">Add Virtual Device</button>
+								name="add-vdev-btn" class="pf-v5-c-button pf-m-primary mt-1">Add Virtual Device</button>
 						</div>
 					</div>
 					<div v-if="navTag == 'snapshots'">
 						<div class="mt-2">
 							<button v-if="canDestructive" @click="createSnapshotBtn()"
 								:id="getIdKey('create-snap-wizard-btn')" name="create-snap-wizard-btn"
-								class="mt-1 btn btn-primary">Create Snapshot</button>
+								class="pf-v5-c-button pf-m-primary mt-1">Create Snapshot</button>
 						</div>
 					</div>
 					<div v-if="navTag == 'settings'">
 						<div class="button-group-row mt-2">
 							<button v-if="!saving" @click="poolConfigureBtn(); props.confirmation;"
 								:id="getIdKey('settings-save-btn')" name="settings-save-btn"
-								class="mt-1 btn btn-primary">Save Changes</button>
+								class="pf-v5-c-button pf-m-primary mt-1">Save Changes</button>
 							<button disabled v-if="saving" id="finish" type="button"
-								class="btn btn-primary object-right justify-end">
-								<svg aria-hidden="true" role="status"
-									class="inline w-4 h-4 mr-3 text-gray-200 animate-spin text-default"
-									viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path
-										d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-										fill="currentColor" />
-									<path
-										d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-										fill="text-success" />
-								</svg>
+								class="pf-v5-c-button pf-m-primary pf-m-in-progress">
 								Saving...
 							</button>
 						</div>
-
 					</div>
 				</div>
 			</div>
 		</template>
-	</OldModal>
+	</PfModal>
 
 	<div v-if="showSnapshotModal">
 		<component :is="createSnapshotComponent" @close="updateShowNewSnapshot" :poolName="props.pool.name"
@@ -354,11 +209,11 @@
 
 <script setup lang="ts">
 import { reactive, ref, inject, Ref, computed, provide, watch } from 'vue';
-import { Switch } from '@headlessui/vue';
 import { configurePool } from '../../composables/pools';
 import { getTimestampString, upperCaseWord, isBoolOnOff, loadScanActivities, loadTrimActivities, formatStatus, getCapacityColor, convertBytesToSize } from '../../composables/helpers';
 import { loadDisksThenPools, loadScanObjectGroup, loadDiskStats } from '../../composables/loadData';
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
+import PfSwitch from '../pf/PfSwitch.vue';
 import PoolCapacity from '../common/PoolCapacity.vue';
 import Navigation from '../common/Navigation.vue';
 import PoolDetailDiskCard from '../disks/PoolDetailDiskCard.vue';

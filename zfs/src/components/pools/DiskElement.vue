@@ -1,118 +1,34 @@
 <template>
-	<div class="border-b border-t border-collapse border-default ">
-		<div class="grid grid-cols-9 grid-flow-cols w-full text-center bg-accent text-default ">
-			<!-- <div class="relative py-1 pl-3 pr-4 text-right font-medium sm:pr-6 lg:pr-8">
-				<span class="sr-only"></span>
-			</div> -->
-			<!-- <div name="disk-name" class="py-1 mt-1 col-span-2" :class="truncateText" :title="props.disk.name">{{ props.disk.name }} {{ diskSdName }}</div> -->
-			<div name="disk-name" class="py-1 mt-1 col-span-2" :class="truncateText" :title="props.disk.name">
-				{{ props.disk.name }} {{ diskSdName }} <span v-if="props.disk.replacingTarget">
-					<span class="text-orange-600">replacing</span> {{ props.disk.replacingTargetLabel }}</span>
-			</div>
-			<div name="disk-state" class="py-1 mt-1 col-span-1 font-semibold"
-				:class="[formatStatus(diskState), truncateText]" :title="diskState">{{ diskState }}</div>
-			<div name="disk-type" class="py-1 mt-1 col-span-1" :class="truncateText" :title="props.disk.type">{{
-				props.disk.type }}</div>
-			<div name="disk-temp" class="py-1 mt-1 col-span-1" :class="truncateText" :title="props.disk.temp">{{
-				props.disk.temp }}</div>
-			<div name="disk-capacity" class="py-1 mt-1 col-span-1" :class="truncateText" :title="props.disk.capacity">{{
-				props.disk.capacity }}</div>
-			<div name="disk-message" class="py-1 -mt-1 col-span-2">
-				<Status :isTrim="false" :disk="props.disk" :pool="props.pool" :isDisk="true" :isPoolList="true"
-					:isPoolDetail="false" :idKey="'trim-status-box'" ref="trimStatusBox"
-					:isTrimmable="getIsTrimmable()" />
-			</div>
-			<div name="disk-" class="col-span-1">
-				<div class="relative py-1 pl-3 pr-4 text-right font-medium sm:pr-6 lg:pr-8">
-					<Menu as="div" class="relative inline-block text-right">
-						<div>
-							<MenuButton @click.stop :disabled="!canDestructive" :aria-disabled="!canDestructive"
-								:title="!canDestructive ? 'Requires administrative privileges' : ''" :class="[
-									'flex items-center rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-gray-100',
-									canDestructive ? 'bg-accent hover:text-white cursor-pointer'
-										: 'bg-accent/60 text-muted cursor-not-allowed'
-								]">
-								<span class="sr-only">Open options</span>
-								<EllipsisVerticalIcon class="w-5" aria-hidden="true" />
-							</MenuButton>
-						</div>
-
-						<transition enter-active-class="transition ease-out duration-100"
-							enter-from-class="transform opacity-0 scale-95"
-							enter-to-class="transform opacity-100 scale-100"
-							leave-active-class="transition ease-in duration-75"
-							leave-from-class="transform opacity-100 scale-100"
-							leave-to-class="transform opacity-0 scale-95">
-							<MenuItems
-								class="absolute right-0 z-10 w-max origin-top-right rounded-md bg-accent shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-								<div class="py-1">
-									<!-- <MenuItem as="div" v-slot="{ active }">
-                                        <a href="#" @click="clearDiskErrors(props.pool.name, props.disk.name)" :class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Clear Disk Errors</a>
-                                    </MenuItem> -->
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="props.vDev.disks.length > 1 && diskState !== 'REMOVED'" href="#"
-										@click="detachThisDisk(props.pool, props.disk)"
-										:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Detach
-										Disk</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="diskState == 'ONLINE'" href="#"
-										@click="offlineThisDisk(props.pool, props.disk)"
-										:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Offline
-										Disk</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="diskState == 'OFFLINE'" href="#"
-										@click="onlineThisDisk(props.pool, props.disk)"
-										:class="[active ? 'bg-green-600 text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Online
-										Disk</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="diskState !== 'REMOVED'" href="#"
-										@click="replaceThisDisk(props.pool, props.vDev, props.disk)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Replace
-										Disk</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="!trimActivity!.isActive && !trimActivity!.isPaused && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState !== 'REMOVED'"
-										href="#" @click="trimThisDisk(props.pool, props.disk)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">TRIM
-										Disk</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="trimActivity!.isPaused && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState !== 'REMOVED'"
-										href="#" @click="resumeTrim(props.pool, props.disk)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">TRIM
-										Disk</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="trimActivity!.isActive && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState !== 'REMOVED'"
-										href="#" @click="pauseTrim(props.pool, props.disk)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Pause
-										TRIM (Disk)</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" >
-									<a v-if="trimActivity!.isActive || trimActivity!.isPaused && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState !== 'REMOVED'"
-										href="#" @click="stopTrim(props.pool, props.disk)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Cancel
-										TRIM (Disk)</a>
-									</MenuItem>
-								</div>
-							</MenuItems>
-						</transition>
-					</Menu>
-				</div>
-			</div>
-		</div>
-		<div v-if="diskState == 'REPLACING' || diskState == 'MISSING'" class="border border-collapse border-default ">
-			<div v-for="disk in props.disk.children!"
-				class="grid grid-cols-9 grid-flow-cols w-full text-center bg-accent text-default">
-				<div class="py-1 mt-1 col-span-3" :class="truncateText" :title="disk.name">{{ props.disk.name }}</div>
-				<div class="py-1 mt-1 col-span-3"></div>
-				<div class="py-1 mt-1 col-span-3"></div>
-			</div>
-		</div>
-	</div>
+	<!-- Semantic table row for disk -->
+	<tr class="pf-v5-c-table__tr border-b border-t border-collapse border-default bg-accent text-default text-center">
+		<td class="pf-v5-c-table__td py-1" :class="truncateText" :title="props.disk.name">
+			{{ props.disk.name }} {{ diskSdName }} <span v-if="props.disk.replacingTarget">
+				<span class="text-orange-600">replacing</span> {{ props.disk.replacingTargetLabel }}</span>
+		</td>
+		<td class="pf-v5-c-table__td py-1 font-semibold"
+			:class="[formatStatus(diskState), truncateText]" :title="diskState">{{ diskState }}</td>
+		<td class="pf-v5-c-table__td py-1" :class="truncateText" :title="props.disk.type">{{
+			props.disk.type }}</td>
+		<td class="pf-v5-c-table__td py-1" :class="truncateText" :title="props.disk.temp">{{
+			props.disk.temp }}</td>
+		<td class="pf-v5-c-table__td py-1" :class="truncateText" :title="props.disk.capacity">{{
+			props.disk.capacity }}</td>
+		<td class="pf-v5-c-table__td py-1">
+			<Status :isTrim="false" :disk="props.disk" :pool="props.pool" :isDisk="true" :isPoolList="true"
+				:isPoolDetail="false" :idKey="'trim-status-box'" ref="trimStatusBox"
+				:isTrimmable="getIsTrimmable()" />
+		</td>
+		<td class="pf-v5-c-table__td py-1 text-right">
+			<PfDropdownMenu :items="diskMenuItems" :kebab="true" />
+		</td>
+	</tr>
+	<!-- Child disks for REPLACING/MISSING state -->
+	<tr v-if="diskState == 'REPLACING' || diskState == 'MISSING'" v-for="disk in props.disk.children!"
+		:key="disk.name" class="pf-v5-c-table__tr border border-collapse border-default bg-accent text-default text-center">
+		<td class="pf-v5-c-table__td py-1" :class="truncateText" :title="disk.name" colspan="3">{{ props.disk.name }}</td>
+		<td class="pf-v5-c-table__td py-1" colspan="2"></td>
+		<td class="pf-v5-c-table__td py-1" colspan="2"></td>
+	</tr>
 
 	<div v-if="showDetachDiskModal">
 		<component :is="detachDiskComponent" :showFlag="showDetachDiskModal" @close="updateShowDetachDisk"
@@ -162,12 +78,12 @@
 </template>
 <script setup lang="ts">
 import { ref, inject, Ref, watch, computed, provide, onMounted } from "vue";
-import { EllipsisVerticalIcon } from '@heroicons/vue/24/outline';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { scrubPool, clearErrors } from "../../composables/pools";
 import { labelClear, detachDisk, offlineDisk, onlineDisk, trimDisk } from "../../composables/disks";
 import { formatStatus } from '../../composables/helpers'
 import Status from "../common/Status.vue";
+import PfDropdownMenu from "../pf/PfDropdownMenu.vue";
+import type { DropdownMenuItem } from "../pf/PfDropdownMenu.vue";
 import { ZPool, VDev, VDevDisk, ZFSFileSystemInfo } from "@45drives/houston-common-lib";
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
 import { PoolScanObjectGroup, PoolDiskStats, Activity, ConfirmationCallback } from "../../types";
@@ -193,6 +109,42 @@ const operationRunning = ref(false);
 const firstOptionToggle = ref(false);
 const secondOptionToggle = ref(false);
 const truncateText = inject<Ref<string>>('style-truncate-text')!;
+
+// Computed menu items for PfDropdownMenu (replaces HeadlessUI Menu)
+const diskMenuItems = computed<DropdownMenuItem[]>(() => {
+	const items: DropdownMenuItem[] = [];
+
+	if (!canDestructive.value) return items;
+
+	if (props.vDev.disks.length > 1 && diskState.value !== 'REMOVED') {
+		items.push({ label: 'Detach Disk', action: () => detachThisDisk(props.pool, props.disk) });
+	}
+	if (diskState.value == 'ONLINE') {
+		items.push({ label: 'Offline Disk', action: () => offlineThisDisk(props.pool, props.disk) });
+	}
+	if (diskState.value == 'OFFLINE') {
+		items.push({ label: 'Online Disk', action: () => onlineThisDisk(props.pool, props.disk) });
+	}
+	if (diskState.value !== 'REMOVED') {
+		items.push({ label: 'Replace Disk', action: () => replaceThisDisk(props.pool, props.vDev, props.disk) });
+	}
+
+	// TRIM actions
+	if (!trimActivity.value?.isActive && !trimActivity.value?.isPaused && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState.value !== 'REMOVED') {
+		items.push({ label: 'TRIM Disk', action: () => trimThisDisk(props.pool, props.disk) });
+	}
+	if (trimActivity.value?.isPaused && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState.value !== 'REMOVED') {
+		items.push({ label: 'Resume TRIM (Disk)', action: () => resumeTrim(props.pool, props.disk) });
+	}
+	if (trimActivity.value?.isActive && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState.value !== 'REMOVED') {
+		items.push({ label: 'Pause TRIM (Disk)', action: () => pauseTrim(props.pool, props.disk) });
+	}
+	if ((trimActivity.value?.isActive || trimActivity.value?.isPaused) && props.pool.diskType != 'HDD' && getIsTrimmable() && diskState.value !== 'REMOVED') {
+		items.push({ label: 'Cancel TRIM (Disk)', action: () => stopTrim(props.pool, props.disk) });
+	}
+
+	return items;
+});
 
 function getIsTrimmable() {
 	selectedPool.value = props.pool;
