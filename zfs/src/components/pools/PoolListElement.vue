@@ -1,175 +1,65 @@
 <template>
-	<div class="">
-		<div class="">
-			<Disclosure v-slot="{ open }" :defaultOpen="false">
-				<DisclosureButton class="bg-default grid grid-cols-10 grid-flow-cols w-full justify-center text-center">
-					<div name="pool-chevron" class="py-1 mt-1 mr-2 col-span-1 ml-4 justify-self-start"
-						:title="poolData[props.poolIdx].name">
-						<ChevronUpIcon class="-mt-2 h-10 w-10 text-default transition-all duration-200 transform"
-							:class="{ 'rotate-90': !open, 'rotate-180': open, }" />
-					</div>
-					<div name="pool-name" class="py-1 mt-1 col-span-1 justify-start text-left flex flex-row"
-						:class="truncateText" :title="poolData[props.poolIdx].name">
-						{{ poolData[props.poolIdx].name}}
-						<div v-if="upgradeablePool"
-							title="Pool was made with a legacy version of ZFS. Upgrade available."
-							class="flex flex-row justify-between w-fit bg-default rounded-full items-center">
-							<ExclamationCircleIcon class="ml-2 w-5 text-orange-700" />
-						</div>
-					</div>
-					<div name="pool-status" class="py-1 mt-1 col-span-1 font-semibold"
-						:class="[formatStatus(poolData[props.poolIdx].status), truncateText]"
-						:title="poolData[props.poolIdx].status">{{ poolData[props.poolIdx].status }}</div>
-					<div name="pool-percentage" class="py-1 mt-1 col-span-1">
-						<div class="w-full bg-well rounded-full text-center"
-							:title="poolData[props.poolIdx].properties.capacity + '%'">
-							<div v-if="props.pool.properties.refreservationPercent!">
-								<div
-									class="w-full bg-well rounded-full h-4 mt-1 text-center relative flex overflow-hidden">
-									<div :class="capacityColor" class="h-4"
-										:style="{ width: `${props.pool.properties.capacity}%` }">
-										<div
-											class="absolute inset-0 flex items-center justify-center text-sm font-medium text-default p-0.5 leading-none">
-											{{ props.pool.properties.capacity }}%
-										</div>
-									</div>
-								</div>
-							</div>
-							<div v-else>
-								<div
-									class="w-full bg-well rounded-full h-4 mt-1 text-center relative flex overflow-hidden">
-									<div :class="capacityColor" class="h-4"
-										:style="{ width: `${props.pool.properties.capacity}%` }">
-										<div
-											class="absolute inset-0 flex items-center justify-center text-sm font-medium text-default p-0.5 leading-none">
-											{{ props.pool.properties.capacity }}%
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div name="pool-used" class="py-1 mt-1 col-span-1" :class="truncateText"
-						:title="poolData[props.poolIdx].properties.allocated">{{
-						poolData[props.poolIdx].properties.allocated }}</div>
-					<div name="pool-available" class="py-1 mt-1 col-span-1" :class="truncateText"
-						:title="poolData[props.poolIdx].properties.available.toString()">{{ poolData[props.poolIdx].properties.available }}
-					</div>
-					<div name="pool-total" class="py-1 mt-1 col-span-1" :class="truncateText"
-						:title="poolData[props.poolIdx].properties.size">{{ poolData[props.poolIdx].properties.size }}
-					</div>
-					<div name="pool-message" class="py-1 -mt-1 col-span-2">
-						<Status :pool="poolData[props.poolIdx]" :isDisk="false" :isTrim="false" :isPoolList="true"
-							:isPoolDetail="false" :idKey="'scan-status-box'" ref="scanStatusBox" />
-					</div>
-					<div name="pool-menu" class="relative py-1 mt-1 p-3 text-right font-medium sm:pr-6 lg:pr-8">
-						<Menu as="div" class="relative inline-block text-right -mt-1">
-							<div>
-								<MenuButton @click.stop
-									class="flex items-center rounded-full bg-default p-2 hover:text-default focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-									<span class="sr-only">Open options</span>
-									<EllipsisVerticalIcon class="w-5" aria-hidden="true" />
-								</MenuButton>
-							</div>
-
-							<transition enter-active-class="transition ease-out duration-100"
-								enter-from-class="transform opacity-0 scale-95"
-								enter-to-class="transform opacity-100 scale-100"
-								leave-active-class="transition ease-in duration-75"
-								leave-from-class="transform opacity-100 scale-100"
-								leave-to-class="transform opacity-0 scale-95">
-								<MenuItems @click.stop
-									class="absolute right-0 z-10 w-max origin-top-right rounded-md bg-default shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-									<div class="py-1">
-										<MenuItem as="div" v-slot="{ active }" >
-										<a href="#" @click="showPoolModal(poolData[props.poolIdx])!"
-											:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Pool Details</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a href="#" @click="clearPoolErrors(poolData[props.poolIdx].name)"
-											:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Clear Pool Errors</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a v-if="upgradeablePool" href="#" @click="upgradeThisPool(props.pool)!"
-											:class="[active ? 'bg-orange-700 text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Upgrade Pool</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a v-if="!scanActivity!.isActive" href="#" @click="resilverThisPool(props.pool)"
-											:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Resilver Pool</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a v-if="!scanActivity!.isActive" href="#" @click="scrubThisPool(props.pool)"
-											:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Scrub Pool</a>
-										<a v-if="scanActivity!.isActive && scanActivity!.isPaused && scanOperation == 'SCRUB'"
-											href="#" @click="resumeScrub(props.pool)"
-											:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Resume Scrub</a>
-										<a v-if="scanActivity!.isActive && !scanActivity!.isPaused && scanOperation == 'SCRUB'"
-											href="#" @click="pauseScrub(props.pool)"
-											:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Pause Scrub</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a v-if="scanActivity!.isActive && scanOperation == 'SCRUB'" href="#"
-											@click="stopScrub(props.pool)"
-											:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Cancel Scrub</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a v-if="!trimActivity!.isActive && !trimActivity!.isPaused && poolData[props.poolIdx].diskType != 'HDD' && getIsTrimmable()"
-											href="#" @click="trimThisPool(poolData[props.poolIdx])"
-											:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											TRIM Pool</a>
-										<a v-if="trimActivity!.isPaused && poolData[props.poolIdx].diskType != 'HDD' && getIsTrimmable()"
-											href="#" @click="resumeTrim(poolData[props.poolIdx])"
-											:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Resume TRIM (Pool)</a>
-										<a v-if="trimActivity!.isActive && poolData[props.poolIdx].diskType != 'HDD' && getIsTrimmable()"
-											href="#" @click="pauseTrim(poolData[props.poolIdx])"
-											:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Pause TRIM (Pool)</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a v-if="trimActivity!.isActive || trimActivity!.isPaused && poolData[props.poolIdx].diskType != 'HDD' && getIsTrimmable()"
-											href="#" @click="stopTrim(poolData[props.poolIdx])"
-											:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Cancel TRIM (Pool)</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-										<a href="#" @click="showAddVDev(poolData[props.poolIdx])"
-											:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Add Virtual Device</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-											<a href="#" @click="exportThisPool(poolData[props.poolIdx])"
-												:class="[active ? 'bg-accent text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Export Pool</a>
-										</MenuItem>
-										<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-											<a href="#" @click="destroyPoolAndUpdate(poolData[props.poolIdx])"
-												:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">
-											Destroy Pool</a>
-										</MenuItem>
-									</div>
-								</MenuItems>
-							</transition>
-						</Menu>
-					</div>
-				</DisclosureButton>
-				<DisclosurePanel class="">
-					<div v-for="vDev, vDevIdx in poolData[props.poolIdx].vdevs" :key="vDevIdx" class="">
-						<VDevElement :pool="poolData[props.poolIdx]" :poolIdx="props.poolIdx" :vDev="vDev"
-							:vDevIdx="vDevIdx" ref="vDevElement" />
-					</div>
-				</DisclosurePanel>
-			</Disclosure>
-		</div>
-	</div>
+	<!-- PF expandable table row: main pool row -->
+	<tr class="pf-v5-c-table__tr bg-default" @click="isExpanded = !isExpanded" style="cursor: pointer;">
+		<td class="pf-v5-c-table__toggle">
+			<button class="pf-v5-c-button pf-m-plain" @click.stop="isExpanded = !isExpanded"
+				:aria-expanded="isExpanded" :title="poolData[props.poolIdx].name">
+				<svg class="pf-v5-c-table__toggle-icon" :style="{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"
+					viewBox="0 0 256 512" fill="currentColor" aria-hidden="true" style="width:1em;height:1em;">
+					<path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/>
+				</svg>
+			</button>
+		</td>
+		<td class="pf-v5-c-table__td py-1 text-left" :class="truncateText" :title="poolData[props.poolIdx].name">
+			<span class="flex flex-row items-center">
+				{{ poolData[props.poolIdx].name }}
+				<span v-if="upgradeablePool"
+					title="Pool was made with a legacy version of ZFS. Upgrade available."
+					class="flex flex-row items-center ml-1">
+					<ExclamationCircleIcon class="w-5 text-orange-700" />
+				</span>
+			</span>
+		</td>
+		<td class="pf-v5-c-table__td py-1 font-semibold text-center"
+			:class="[formatStatus(poolData[props.poolIdx].status), truncateText]"
+			:title="poolData[props.poolIdx].status">{{ poolData[props.poolIdx].status }}</td>
+		<td class="pf-v5-c-table__td py-1 text-center">
+			<!-- PF Progress bar -->
+			<div class="pf-v5-c-progress" :class="{'pf-m-danger': Number(props.pool.properties.capacity) > 80}"
+				:title="props.pool.properties.capacity + '%'">
+				<div class="pf-v5-c-progress__description">{{ props.pool.properties.capacity }}%</div>
+				<div class="pf-v5-c-progress__bar" role="progressbar"
+					:aria-valuenow="Number(props.pool.properties.capacity)" aria-valuemin="0" aria-valuemax="100">
+					<div class="pf-v5-c-progress__indicator" :style="{ width: props.pool.properties.capacity + '%' }"></div>
+				</div>
+			</div>
+		</td>
+		<td class="pf-v5-c-table__td py-1 text-center" :class="truncateText"
+			:title="poolData[props.poolIdx].properties.allocated">{{
+			poolData[props.poolIdx].properties.allocated }}</td>
+		<td class="pf-v5-c-table__td py-1 text-center" :class="truncateText"
+			:title="poolData[props.poolIdx].properties.available.toString()">{{ poolData[props.poolIdx].properties.available }}
+		</td>
+		<td class="pf-v5-c-table__td py-1 text-center" :class="truncateText"
+			:title="poolData[props.poolIdx].properties.size">{{ poolData[props.poolIdx].properties.size }}
+		</td>
+		<td class="pf-v5-c-table__td py-1 text-center" @click.stop>
+			<Status :pool="poolData[props.poolIdx]" :isDisk="false" :isTrim="false" :isPoolList="true"
+				:isPoolDetail="false" :idKey="'scan-status-box'" ref="scanStatusBox" />
+		</td>
+		<td class="pf-v5-c-table__td py-1 text-right" @click.stop>
+			<PfDropdownMenu :items="poolMenuItems" :kebab="true" />
+		</td>
+	</tr>
+	<!-- PF expandable content row -->
+	<tr class="pf-v5-c-table__expandable-row" :class="{'pf-m-expanded': isExpanded}" v-if="isExpanded">
+		<td :colspan="9">
+			<div v-for="(vDev, vDevIdx) in poolData[props.poolIdx].vdevs" :key="vDevIdx">
+				<VDevElement :pool="poolData[props.poolIdx]" :poolIdx="props.poolIdx" :vDev="vDev"
+					:vDevIdx="vDevIdx" ref="vDevElement" />
+			</div>
+		</td>
+	</tr>
 
 	<div v-if="showPoolDetails">
 		<component :is="showPoolDetailsComponent" :showFlag="showPoolDetails" @close="updateShowPoolDetails"
@@ -245,13 +135,14 @@
 </template>
 <script setup lang="ts">
 import { ref, inject, Ref, provide, watch, computed, onMounted} from "vue";
-import { EllipsisVerticalIcon, ChevronUpIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
+import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
 import { destroyPool, trimPool, scrubPool, resilverPool, clearErrors, exportPool, upgradePool } from "../../composables/pools";
 import { labelClear } from "../../composables/disks";
 import { formatStatus, isPoolUpgradable, getCapacityColor  } from '../../composables/helpers';
 import VDevElement from "./VDevElement.vue";
 import Status from "../common/Status.vue";
+import PfDropdownMenu from "../pf/PfDropdownMenu.vue";
+import type { DropdownMenuItem } from "../pf/PfDropdownMenu.vue";
 import { ZPool, VDevDisk, ZFSFileSystemInfo } from "@45drives/houston-common-lib";
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
 import { PoolScanObjectGroup, PoolDiskStats, ConfirmationCallback, Activity } from "../../types";
@@ -265,6 +156,62 @@ interface PoolListElementProps {
 const props = defineProps<PoolListElementProps>();
 const truncateText = inject<Ref<string>>('style-truncate-text')!;
 const canDestructive = inject<Ref<boolean>>('can-destructive')!;
+
+// PF expandable row state (replaces HeadlessUI Disclosure)
+const isExpanded = ref(false);
+
+// Computed menu items for PfDropdownMenu (replaces HeadlessUI Menu)
+const poolMenuItems = computed<DropdownMenuItem[]>(() => {
+	const items: DropdownMenuItem[] = [
+		{ label: 'Pool Details', action: () => showPoolModal(poolData.value[props.poolIdx]) },
+	];
+
+	if (canDestructive.value) {
+		items.push({ label: 'Clear Pool Errors', action: () => clearPoolErrors(poolData.value[props.poolIdx].name) });
+
+		if (upgradeablePool.value) {
+			items.push({ label: 'Upgrade Pool', action: () => upgradeThisPool(props.pool) });
+		}
+
+		if (!scanActivity.value?.isActive) {
+			items.push({ label: 'Resilver Pool', action: () => resilverThisPool(props.pool) });
+		}
+
+		// Scrub actions
+		if (!scanActivity.value?.isActive) {
+			items.push({ label: 'Scrub Pool', action: () => scrubThisPool(props.pool) });
+		}
+		if (scanActivity.value?.isActive && scanActivity.value?.isPaused && scanOperation.value == 'SCRUB') {
+			items.push({ label: 'Resume Scrub', action: () => resumeScrub(props.pool) });
+		}
+		if (scanActivity.value?.isActive && !scanActivity.value?.isPaused && scanOperation.value == 'SCRUB') {
+			items.push({ label: 'Pause Scrub', action: () => pauseScrub(props.pool) });
+		}
+		if (scanActivity.value?.isActive && scanOperation.value == 'SCRUB') {
+			items.push({ label: 'Cancel Scrub', action: () => stopScrub(props.pool) });
+		}
+
+		// TRIM actions
+		if (!trimActivity.value?.isActive && !trimActivity.value?.isPaused && poolData.value[props.poolIdx].diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'TRIM Pool', action: () => trimThisPool(poolData.value[props.poolIdx]) });
+		}
+		if (trimActivity.value?.isPaused && poolData.value[props.poolIdx].diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'Resume TRIM (Pool)', action: () => resumeTrim(poolData.value[props.poolIdx]) });
+		}
+		if (trimActivity.value?.isActive && poolData.value[props.poolIdx].diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'Pause TRIM (Pool)', action: () => pauseTrim(poolData.value[props.poolIdx]) });
+		}
+		if ((trimActivity.value?.isActive || trimActivity.value?.isPaused) && poolData.value[props.poolIdx].diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'Cancel TRIM (Pool)', action: () => stopTrim(poolData.value[props.poolIdx]) });
+		}
+
+		items.push({ label: 'Add Virtual Device', action: () => showAddVDev(poolData.value[props.poolIdx]) });
+		items.push({ label: 'Export Pool', action: () => exportThisPool(poolData.value[props.poolIdx]) });
+		items.push({ label: 'Destroy Pool', action: () => destroyPoolAndUpdate(poolData.value[props.poolIdx]) });
+	}
+
+	return items;
+});
 
 const selectedPool = ref<ZPool>();
 const selectedDisk = ref<VDevDisk>();

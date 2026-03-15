@@ -1,10 +1,5 @@
 <template>
-    <OldModal :isOpen="showImportModal" @close="showImportModal = false" :marginTop="'mt-28'" :width="'w-3/5'"
-        :minWidth="'min-w-3/5'" :closeOnBackgroundClick="false">
-        <template v-slot:title>
-            <legend class="flex justify-center">Import Pool</legend>
-        </template>
-        <template v-slot:content>
+    <PfModal :isOpen="showImportModal" title="Import Pool" variant="large" @close="showImportModal = false">
             <div>
                 <div class="grid grid-cols-3">
 
@@ -94,31 +89,8 @@
 
                     <!-- Switch for showing exported pools or showing deleted pools -->
                     <div class="mt-2 col-span-1">
-                        <label :for="getIdKey('show-destroyed-pools-switch')"
-                            class="mt-1 bg-default block text-sm leading-6 text-default">Show Destroyed Pools</label>
-                        <Switch v-model="showDeletedPools" :id="getIdKey('show-destroyed-pools-switch')"
-                            :class="[showDeletedPools! ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span
-                                :class="[showDeletedPools! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span
-                                    :class="[showDeletedPools! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span
-                                    :class="[showDeletedPools! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path
-                                            d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
+                        <PfSwitch v-model="showDeletedPools" :id="getIdKey('show-destroyed-pools-switch')"
+                            label="Show Destroyed Pools" />
                     </div>
 
                     <!-- Disk Identifier -->
@@ -135,31 +107,8 @@
 
                     <!-- Switch for renaming imported pool -->
                     <div class="mt-2 col-span-1">
-                        <label :for="getIdKey('rename-pool-switch')"
-                            class="mt-1 bg-default block text-sm leading-6 text-default">Rename Pool</label>
-                        <Switch v-model="importedPool.renamePool" :id="getIdKey('rename-pool-switch')"
-                            :class="[importedPool.renamePool! ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span
-                                :class="[importedPool.renamePool! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span
-                                    :class="[importedPool.renamePool! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span
-                                    :class="[importedPool.renamePool! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path
-                                            d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
+                        <PfSwitch v-model="importedPool.renamePool" :id="getIdKey('rename-pool-switch')"
+                            label="Rename Pool" />
                     </div>
                     <!-- If Switch is ON, show text input for new pool name -->
                     <div v-if="importedPool.renamePool" class="mt-2 col-span-2">
@@ -180,154 +129,32 @@
 
                     <!-- Switch for Read Only -->
                     <div class="mt-2 col-span-1">
-                        <label :for="getIdKey('read-only')"
-                            class="mt-1 bg-default block text-sm leading-6 text-default">Read Only</label>
-                        <Switch v-model="importedPool.readOnly" :id="getIdKey('read-only')"
-                            :class="[importedPool.readOnly! ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span
-                                :class="[importedPool.readOnly! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span
-                                    :class="[importedPool.readOnly! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span
-                                    :class="[importedPool.readOnly! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path
-                                            d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
+                        <PfSwitch v-model="importedPool.readOnly" :id="getIdKey('read-only')" label="Read Only" />
                     </div>
 
                     <!-- Switch for Recovery Mode -->
                     <div class="mt-2 col-span-1">
-                        <label :for="getIdKey('recovery-mode')"
-                            class="mt-1 bg-default block text-sm leading-6 text-default">Recovery Mode</label>
-                        <Switch v-model="importedPool.recoveryMode" :id="getIdKey('recovery-mode')"
-                            :class="[importedPool.recoveryMode! ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span
-                                :class="[importedPool.recoveryMode! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span
-                                    :class="[importedPool.recoveryMode! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span
-                                    :class="[importedPool.recoveryMode! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path
-                                            d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
+                        <PfSwitch v-model="importedPool.recoveryMode" :id="getIdKey('recovery-mode')" label="Recovery Mode" />
                     </div>
 
                     <!-- Switch for Ignore Missing Log Devices -->
                     <div class="mt-2 col-span-1">
-                        <label :for="getIdKey('ignore-missing-logs')"
-                            class="mt-1 bg-default block text-sm leading-6 text-default">Ignore Missing Log
-                            Devices</label>
-                        <Switch v-model="importedPool.ignoreMissingLog" :id="getIdKey('ignore-missing-logs')"
-                            :class="[importedPool.ignoreMissingLog! ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span
-                                :class="[importedPool.ignoreMissingLog! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span
-                                    :class="[importedPool.ignoreMissingLog! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span
-                                    :class="[importedPool.ignoreMissingLog! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path
-                                            d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
+                        <PfSwitch v-model="importedPool.ignoreMissingLog" :id="getIdKey('ignore-missing-logs')" label="Ignore Missing Log Devices" />
                     </div>
 
                     <!-- Switch for Mount Filesystems (ON by default, if OFF then execute command) -->
                     <div class="mt-2 col-span-1">
-                        <label :for="getIdKey('mount-filesystems')"
-                            class="mt-1 bg-default block text-sm leading-6 text-default">Mount File Systems</label>
-                        <Switch v-model="importedPool.mountFileSystems" :id="getIdKey('mount-filesystems')"
-                            :class="[importedPool.mountFileSystems! ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span
-                                :class="[importedPool.mountFileSystems! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span
-                                    :class="[importedPool.mountFileSystems! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span
-                                    :class="[importedPool.mountFileSystems! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path
-                                            d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
+                        <PfSwitch v-model="importedPool.mountFileSystems" :id="getIdKey('mount-filesystems')" label="Mount File Systems" />
                     </div>
 
                     <!-- Switch for Force Import -->
                     <div class="mt-2 col-span-1">
-                        <label :for="getIdKey('force-import')"
-                            class="mt-1 bg-default block text-sm leading-6 text-default">Forcefully Import</label>
-                        <Switch v-model="importedPool.forceImport" :id="getIdKey('force-import')"
-                            :class="[importedPool.forceImport! ? 'bg-secondary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span
-                                :class="[importedPool.forceImport! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span
-                                    :class="[importedPool.forceImport! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span
-                                    :class="[importedPool.forceImport! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                    aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path
-                                            d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
+                        <PfSwitch v-model="importedPool.forceImport" :id="getIdKey('force-import')" label="Forcefully Import" />
                     </div>
 
                 </div>
             </div>
-        </template>
-        <template v-slot:footer>
+        <template #footer>
             <div class="w-full grid grid-rows-2">
                 <div class="w-full row-start-1">
                     <div class="mt-2">
@@ -336,12 +163,12 @@
                 </div>
                 <div class="button-group-row w-full row-start-2 justify-between mt-2">
                     <button @click="showImportModal = false" :id="getIdKey('cancel-import')" name="cancel-import"
-                        class="mt-1 btn btn-danger object-left justify-start h-fit">Cancel</button>
+                        class="pf-v5-c-button pf-m-danger mt-1">Cancel</button>
                     <button v-if="!importing" @click="importPoolBtn()" :id="getIdKey('import-pool-btn')"
                         name="import-pool-btn"
-                        class="mt-1 btn btn-primary object-right justify-end h-fit">Import</button>
+                        class="pf-v5-c-button pf-m-primary mt-1">Import</button>
                     <button v-if="importing" disabled :id="getIdKey('import-pool-spinner')" type="button"
-                        class="btn btn-danger object-right justify-end">
+                        class="pf-v5-c-button pf-m-primary pf-m-in-progress">
                         <svg aria-hidden="true" role="status"
                             class="inline w-4 h-4 mr-3 text-gray-200 animate-spin text-default" viewBox="0 0 100 101"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -357,12 +184,12 @@
                 </div>
             </div>
         </template>
-    </OldModal>
+    </PfModal>
 </template>
 <script setup lang="ts">
 import { inject, ref, Ref, computed, watch } from 'vue';
-import { Switch } from '@headlessui/vue';
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
+import PfSwitch from '../pf/PfSwitch.vue';
 import LoadingSpinner from '../common/LoadingSpinner.vue';
 import { ExclamationCircleIcon } from '@heroicons/vue/24/outline';
 import { loadImportablePools, loadImportableDestroyedPools } from '../../composables/loadImportables';

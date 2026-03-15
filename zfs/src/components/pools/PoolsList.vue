@@ -1,23 +1,25 @@
 <template>
 	<div
 		class="inline-block min-w-full min-h-full py-4 align-middle sm:px-4 lg:px-6 overflow-visible bg-accent rounded-md border border-default">
-		<div
-			class="flex bg-well justify-between rounded-md p-2 shadow text-default rounded-b-md ring-1 ring-black ring-opacity-5">
-			<div v-if="canDestructive" class="button-group-row justify-start">
-				<button id="createPool" class="btn btn-primary" @click="newPoolWizardBtn">Create Storage Pool</button>
-				<button id="importPool" class="btn btn-secondary" @click="importNewPoolBtn">Import Storage Pool</button>
-			</div>
-			<div v-else class="button-group-row justify-start">
-				<button id="createPool" disabled :title="!canDestructive ? 'Requires administrative privileges' : ''"
-					class="btn btn-primary" @click="newPoolWizardBtn">Create Storage Pool</button>
-				<button id="importPool" disabled :title="!canDestructive ? 'Requires administrative privileges' : ''"
-					class="btn btn-secondary" @click="importNewPoolBtn">Import Storage
-					Pool</button>
-			</div>
-			<div class="button-group-row justify-end">
-				<button id="refreshPools" class="btn btn-secondary " @click="refreshAllData">
-					<ArrowPathIcon class="w-5 h-5 m-1" />
-				</button>
+		<!-- PF Toolbar -->
+		<div class="pf-v5-c-toolbar">
+			<div class="pf-v5-c-toolbar__content">
+				<div class="pf-v5-c-toolbar__group">
+					<button id="createPool" class="pf-v5-c-button pf-m-primary"
+						:disabled="!canDestructive"
+						:title="!canDestructive ? 'Requires administrative privileges' : ''"
+						@click="newPoolWizardBtn">Create Storage Pool</button>
+					<button id="importPool" class="pf-v5-c-button pf-m-secondary"
+						:disabled="!canDestructive"
+						:title="!canDestructive ? 'Requires administrative privileges' : ''"
+						@click="importNewPoolBtn">Import Storage Pool</button>
+				</div>
+				<div class="pf-v5-c-toolbar__item pf-m-pagination">
+					<button id="refreshPools" class="pf-v5-c-button pf-m-plain" aria-label="Refresh pools"
+						@click="refreshAllData">
+						<ArrowPathIcon class="w-5 h-5" />
+					</button>
+				</div>
 			</div>
 		</div>
 
@@ -25,41 +27,38 @@
 			<div class="inline-block min-w-full min-h-full shadow align-middle rounded-md border border-default">
 				<div class="whitespace-nowrap text-ellipsis ring-1 ring-black ring-opacity-5 rounded-md">
 
-					<table class="min-w-full divide-y divide-default rounded-md">
+					<table class="pf-v5-c-table pf-m-grid-md min-w-full divide-y divide-default rounded-md">
 						<thead class="rounded-md">
-							<tr class="bg-well rounded-t-md grid grid-cols-10">
-								<th class="relative py-2 rounded-tl-md col-span-1">
-									<span class="sr-only"></span>
+							<tr class="pf-v5-c-table__tr bg-well rounded-t-md">
+								<th class="pf-v5-c-table__th" style="width: 3rem;">
+									<span class="sr-only">Toggle</span>
 								</th>
-								<th class="py-2 font-semibold text-default col-span-1 flex flex-row justify-start"
+								<th class="pf-v5-c-table__th py-2 font-semibold text-default text-left"
 									:class="truncateText" title="Name">Name</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Status">Status</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Used (%)">Used (%)</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Used">Used</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Available">Available</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Total">Total</th>
-								<th class="py-2 font-semibold text-default col-span-2" :class="truncateText"
-									title="Message">Message</th>
-								<th class="relative py-2 sm:pr-6 lg:pr-8 rounded-tr-md col-span-1">
-									<span class="sr-only"></span>
+								<th class="pf-v5-c-table__th py-2 font-semibold text-default text-center"
+									:class="truncateText" title="Status">Status</th>
+								<th class="pf-v5-c-table__th py-2 font-semibold text-default text-center"
+									:class="truncateText" title="Used (%)">Used (%)</th>
+								<th class="pf-v5-c-table__th py-2 font-semibold text-default text-center"
+									:class="truncateText" title="Used">Used</th>
+								<th class="pf-v5-c-table__th py-2 font-semibold text-default text-center"
+									:class="truncateText" title="Available">Available</th>
+								<th class="pf-v5-c-table__th py-2 font-semibold text-default text-center"
+									:class="truncateText" title="Total">Total</th>
+								<th class="pf-v5-c-table__th py-2 font-semibold text-default text-center"
+									:class="truncateText" title="Message">Message</th>
+								<th class="pf-v5-c-table__th" style="width: 3rem;">
+									<span class="sr-only">Actions</span>
 								</th>
-
 							</tr>
 						</thead>
 
-						<tbody class="">
-							<tr class="border border-collapse border-default ">
-								<div v-if="poolData.length > 0 && poolsLoaded == true" class="">
-									<div v-for="pool, poolIdx in poolData" :key="poolIdx" class="">
-										<PoolListElement :poolIdx="poolIdx" :pool="pool" />
-									</div>
-								</div>
-							</tr>
+						<tbody class="pf-v5-c-table__tbody">
+							<template v-if="poolData.length > 0 && poolsLoaded == true">
+								<template v-for="(pool, poolIdx) in poolData" :key="poolIdx">
+									<PoolListElement :poolIdx="poolIdx" :pool="pool" />
+								</template>
+							</template>
 						</tbody>
 					</table>
 
@@ -67,8 +66,13 @@
 						<LoadingSpinner :width="'w-10'" :height="'h-10'" :baseColor="'text-gray-200'"
 							:fillColor="'fill-slate-500'" class="font-semibold text-lg my-0.5" />
 					</div>
-					<div v-if="poolData.length < 1 && poolsLoaded == true" class="p-2 flex bg-default justify-center ">
-						<span class="font-semibold text-lg my-2">No Pools Found</span>
+					<!-- PF EmptyState -->
+					<div v-if="poolData.length < 1 && poolsLoaded == true" class="pf-v5-c-empty-state">
+						<div class="pf-v5-c-empty-state__content">
+							<h2 class="pf-v5-c-empty-state__header">
+								<div class="pf-v5-c-empty-state__title-text">No Pools Found</div>
+							</h2>
+						</div>
 					</div>
 
 				</div>

@@ -15,100 +15,7 @@
 							<span class="text-orange-700 ml-1">Upgrade Available</span>
 						</div>
 					</div>
-					<Menu as="div" class="relative inline-block text-right">
-						<div>
-							<MenuButton class="rounded-full p-1 bg-default text-default hover:text-gray-600">
-								<span class="sr-only">Open options</span>
-								<EllipsisVerticalIcon class="w-5" aria-hidden="true" />
-							</MenuButton>
-						</div>
-						<transition enter-active-class="transition ease-out duration-100"
-							enter-from-class="transform opacity-0 scale-95"
-							enter-to-class="transform opacity-100 scale-100"
-							leave-active-class="transition ease-in duration-75"
-							leave-from-class="transform opacity-100 scale-100"
-							leave-to-class="transform opacity-0 scale-95">
-							<MenuItems
-								class="absolute right-0 z-10 -mt-1 w-max origin-top-left rounded-md bg-accent shadow-lg">
-								<div class="py-1">
-									<MenuItem as="div" v-slot="{ active }">
-									<a href="#" @click="showDetails(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Pool
-										Details</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a href="#" @click="clearPoolErrors(props.pool.name)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Clear
-										Pool Errors</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a v-if="upgradeablePool" href="#" @click="upgradeThisPool(props.pool)!"
-										:class="[active ? 'bg-orange-700 text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Upgrade
-										Pool</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a v-if="!scanActivity!.isActive" href="#" @click="resilverThisPool(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Resilver
-										Pool</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a v-if="!scanActivity!.isActive" href="#" @click="scrubThisPool(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Scrub
-										Pool</a>
-									<a v-if="scanActivity!.isActive && scanActivity!.isPaused && scanOperation == 'SCRUB'"
-										href="#" @click="resumeScrub(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Resume
-										Scrub</a>
-									<a v-if="scanActivity!.isActive && !scanActivity!.isPaused && scanOperation == 'SCRUB'"
-										href="#" @click="pauseScrub(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Pause
-										Scrub</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a v-if="scanActivity!.isActive && scanOperation == 'SCRUB'" href="#"
-										@click="stopScrub(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Cancel
-										Scrub</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a v-if="!trimActivity!.isActive && !trimActivity!.isPaused && pool.diskType != 'HDD' && getIsTrimmable()"
-										href="#" @click="trimThisPool(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">TRIM
-										Pool</a>
-									<a v-if="trimActivity!.isPaused && pool.diskType != 'HDD' && getIsTrimmable()"
-										href="#" @click="resumeTrim(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Resume
-										TRIM (Pool)</a>
-									<a v-if="trimActivity!.isActive && pool.diskType != 'HDD' && getIsTrimmable()"
-										href="#" @click="pauseTrim(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Pause
-										TRIM (Pool)</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a v-if="trimActivity!.isActive || trimActivity!.isPaused && pool.diskType != 'HDD' && getIsTrimmable()"
-										href="#" @click="stopTrim(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Cancel
-										TRIM (Pool)</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a href="#" @click="showAddVDev(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Add
-										Virtual Device</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a href="#" @click="exportThisPool(props.pool)"
-										:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Export
-										Pool</a>
-									</MenuItem>
-									<MenuItem as="div" v-slot="{ active }" v-if="canDestructive">
-									<a href="#" @click="destroyPoolAndUpdate(props.pool)!"
-										:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Destroy
-										Pool</a>
-									</MenuItem>
-								</div>
-							</MenuItems>
-						</transition>
-					</Menu>
+					<PfDropdownMenu :items="dashPoolMenuItems" :kebab="true" />
 				</div>
 				<div class="flex flex-row justify-between">
 					<div>
@@ -265,8 +172,9 @@
 
 <script setup lang="ts">
 import { ref, inject, Ref, computed, provide, watch, onMounted} from "vue";
-import { EllipsisVerticalIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline';
+import PfDropdownMenu from "../pf/PfDropdownMenu.vue";
+import type { DropdownMenuItem } from "../pf/PfDropdownMenu.vue";
 import { destroyPool, trimPool, scrubPool, resilverPool, clearErrors, exportPool, upgradePool } from "../../composables/pools";
 import { labelClear } from "../../composables/disks";
 import { formatStatus, isPoolUpgradable, getCapacityColor } from '../../composables/helpers'
@@ -336,6 +244,57 @@ function getIsTrimmable() {
 onMounted(() => {
 	getIsTrimmable();
 	canUpgradePool(props.pool.name);
+});
+
+// Computed menu items for PfDropdownMenu (replaces HeadlessUI Menu)
+const dashPoolMenuItems = computed<DropdownMenuItem[]>(() => {
+	const items: DropdownMenuItem[] = [
+		{ label: 'Pool Details', action: () => showDetails(props.pool) },
+	];
+
+	if (canDestructive.value) {
+		items.push({ label: 'Clear Pool Errors', action: () => clearPoolErrors(props.pool.name) });
+
+		if (upgradeablePool.value) {
+			items.push({ label: 'Upgrade Pool', action: () => upgradeThisPool(props.pool) });
+		}
+
+		if (!scanActivity.value?.isActive) {
+			items.push({ label: 'Resilver Pool', action: () => resilverThisPool(props.pool) });
+		}
+
+		if (!scanActivity.value?.isActive) {
+			items.push({ label: 'Scrub Pool', action: () => scrubThisPool(props.pool) });
+		}
+		if (scanActivity.value?.isActive && scanActivity.value?.isPaused && scanOperation.value == 'SCRUB') {
+			items.push({ label: 'Resume Scrub', action: () => resumeScrub(props.pool) });
+		}
+		if (scanActivity.value?.isActive && !scanActivity.value?.isPaused && scanOperation.value == 'SCRUB') {
+			items.push({ label: 'Pause Scrub', action: () => pauseScrub(props.pool) });
+		}
+		if (scanActivity.value?.isActive && scanOperation.value == 'SCRUB') {
+			items.push({ label: 'Cancel Scrub', action: () => stopScrub(props.pool) });
+		}
+
+		if (!trimActivity.value?.isActive && !trimActivity.value?.isPaused && props.pool.diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'TRIM Pool', action: () => trimThisPool(props.pool) });
+		}
+		if (trimActivity.value?.isPaused && props.pool.diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'Resume TRIM (Pool)', action: () => resumeTrim(props.pool) });
+		}
+		if (trimActivity.value?.isActive && props.pool.diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'Pause TRIM (Pool)', action: () => pauseTrim(props.pool) });
+		}
+		if ((trimActivity.value?.isActive || trimActivity.value?.isPaused) && props.pool.diskType != 'HDD' && getIsTrimmable()) {
+			items.push({ label: 'Cancel TRIM (Pool)', action: () => stopTrim(props.pool) });
+		}
+
+		items.push({ label: 'Add Virtual Device', action: () => showAddVDev(props.pool) });
+		items.push({ label: 'Export Pool', action: () => exportThisPool(props.pool) });
+		items.push({ label: 'Destroy Pool', action: () => destroyPoolAndUpdate(props.pool) });
+	}
+
+	return items;
 });
 
 ///////// Values for Confirmation Modals ////////////
