@@ -58,6 +58,32 @@ def get_logger(name: str, file_basename: str, app_name: str = "cockpit-zfs") -> 
 
 logger = get_logger("cockpit_zfs_getpools", "getpools.log")
 
+def _pool_props(pool_name):
+    """Fetch extra per-pool properties via ``zpool get``."""
+    defaults = {
+        "ashift": "0", "comment": "-",
+        "autoexpand": "off", "autoreplace": "off", "autotrim": "off",
+        "delegation": "on", "listsnapshots": "off", "readonly": "off",
+        "failmode": "wait", "altroot": "-",
+    }
+    try:
+        res = subprocess.run(
+            ["zpool", "get", ",".join(defaults.keys()), pool_name,
+             "-Hp", "-o", "property,value"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
+        )
+        if res.returncode == 0:
+            for line in res.stdout.strip().splitlines():
+                parts = line.split("\t", 1)
+                if len(parts) == 2:
+                    defaults[parts[0]] = parts[1]
+    except Exception as e:
+        logger.warning(f"zpool get failed for {pool_name}: {e}")
+    return defaults
+
+def _on_off_to_bool(val):
+    return val.lower() in ("on", "yes", "true", "1")
+
 def _pools_from_zpool_list_min():
     """Permission-friendly fallback when libzfs /dev/zfs is blocked."""
     try:
@@ -75,6 +101,7 @@ def _pools_from_zpool_list_min():
             if not line:
                 continue
             name, size, alloc, cap, free, health, guid = line.split()
+            props = _pool_props(name)
             pools.append({
                 "name": name,
                 "status": health,
@@ -85,14 +112,16 @@ def _pools_from_zpool_list_min():
                     "capacity": {"rawvalue": int(cap.rstrip("%"))},
                     "free": {"parsed": int(free)},
                     "health": {"parsed": health},
-                    "autoexpand": {"parsed": False},
-                    "autoreplace": {"parsed": False},
-                    "autotrim": {"parsed": "off"},
-                    "delegation": {"parsed": True},
-                    "listsnapshots": {"parsed": False},
-                    "readonly": {"parsed": False},
-                    "failmode": {"parsed": "wait"},
-                    "altroot": {"value": "-"},
+                    "ashift": {"rawvalue": props["ashift"]},
+                    "comment": {"value": props["comment"]},
+                    "autoexpand": {"parsed": _on_off_to_bool(props["autoexpand"])},
+                    "autoreplace": {"parsed": _on_off_to_bool(props["autoreplace"])},
+                    "autotrim": {"parsed": props["autotrim"]},
+                    "delegation": {"parsed": _on_off_to_bool(props["delegation"])},
+                    "listsnapshots": {"parsed": _on_off_to_bool(props["listsnapshots"])},
+                    "readonly": {"parsed": _on_off_to_bool(props["readonly"])},
+                    "failmode": {"parsed": props["failmode"]},
+                    "altroot": {"value": props["altroot"]},
                 },
                 "root_dataset": None,
                 "scan": {
