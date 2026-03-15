@@ -1,4 +1,7 @@
 import { createApp} from 'vue';
+import '@patternfly/patternfly/patternfly.css';
+import '@patternfly/patternfly/patternfly-addons.css';
+import './assets/pf-bridge.css';
 import './assets/zfs.css';
 import App from './App.vue';
 import '@45drives/houston-common-css/src/index.css';
