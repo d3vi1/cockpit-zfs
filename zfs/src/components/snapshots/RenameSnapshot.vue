@@ -1,69 +1,45 @@
 <template>
-    <OldModal :isOpen="showRenameSnapModal" @close="showRenameSnapModal = false" :marginTop="'mt-28'" :width="'w-4/12'" :minWidth="'min-w-4/12'" :closeOnBackgroundClick="false">
-        <template v-slot:title>
-            <legend class="flex justify-center">Rename Snapshot</legend>
-        </template>
-        <template v-slot:content>
-            <div class="grid grid-cols-1">
-                <!-- Parent File System -->
-                <div class="mt-2 col-span-1">
-                    <label :for="getIdKey('parent-filesystem')" class="block text-sm font-medium leading-6 text-default">Parent File System</label>
-                    <p :class="truncateText" :title="props.snapshot.dataset">{{ props.snapshot.dataset }}</p>
-                </div>
+    <PfModal :isOpen="showRenameSnapModal" @close="showRenameSnapModal = false" title="Rename Snapshot">
+        <div class="grid grid-cols-1">
+            <!-- Parent File System -->
+            <div class="mt-2 col-span-1">
+                <label :for="getIdKey('parent-filesystem')" class="block text-sm font-medium leading-6 text-default">Parent File System</label>
+                <p :class="truncateText" :title="props.snapshot.dataset">{{ props.snapshot.dataset }}</p>
+            </div>
 
-                <!-- Set name as creation date -->
-                <div class="mt-2 col-span-1">
-                    <div class="flex flex-row justify-between">
-                        <label :for="getIdKey('set-name-creation-date')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Creation Date</label>
-                        <Switch v-model="creationDate" :id="getIdKey('set-name-creation-date')" :class="[creationDate! ? 'bg-primary' : 'bg-accent', 'mt-2 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span :class="[creationDate! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span :class="[creationDate! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span :class="[creationDate! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
-                    </div>
-                </div>
-
-                <!-- New Name -->
-                <div class="mt-2 col-span-1">
-                    <label :for="getIdKey('new-name')" class="mt-1 block text-sm font-medium leading-6 text-default">New Name</label>
-                    <input v-if="creationDate" disabled :id="getIdKey('new-name')" type="text" v-model="newName" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default placeholder:text-muted sm:text-sm sm:leading-6" :placeholder="`${convertRawTimestampToString(props.snapshot.properties.creation.rawTimestamp)}`" />
-                    <input v-else :id="getIdKey('new-name')" type="text" v-model="newName" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default placeholder:text-muted sm:text-sm sm:leading-6" placeholder="New Name" />
-                </div>
-
-                <!-- Rename child snapshots with same name -->
-                <div class="mt-2 col-span-1">
-                    <div class="flex flex-row justify-between">
-                        <label :for="getIdKey('rename-children')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Rename child snapshots with same name</label>
-                        <Switch v-model="renameChildSnaps" :id="getIdKey('rename-children')" :class="[renameChildSnaps! ? 'bg-primary' : 'bg-accent', 'mt-2 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                            <span class="sr-only">Use setting</span>
-                            <span :class="[renameChildSnaps! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                <span :class="[renameChildSnaps! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                    <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                        <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span :class="[renameChildSnaps! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                    <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                        <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                    </svg>
-                                </span>
-                            </span>
-                        </Switch>
-                    </div>
+            <!-- Set name as creation date -->
+            <div class="mt-2 col-span-1">
+                <div class="flex flex-row justify-between">
+                    <label :for="getIdKey('set-name-creation-date')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Creation Date</label>
+                    <PfSwitch
+                        :modelValue="creationDate"
+                        @update:modelValue="creationDate = $event"
+                        :id="getIdKey('set-name-creation-date')"
+                    />
                 </div>
             </div>
-        </template>
-        <template v-slot:footer>
+
+            <!-- New Name -->
+            <div class="mt-2 col-span-1">
+                <label :for="getIdKey('new-name')" class="mt-1 block text-sm font-medium leading-6 text-default">New Name</label>
+                <input v-if="creationDate" disabled :id="getIdKey('new-name')" type="text" v-model="newName" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default placeholder:text-muted sm:text-sm sm:leading-6" :placeholder="`${convertRawTimestampToString(props.snapshot.properties.creation.rawTimestamp)}`" />
+                <input v-else :id="getIdKey('new-name')" type="text" v-model="newName" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default placeholder:text-muted sm:text-sm sm:leading-6" placeholder="New Name" />
+            </div>
+
+            <!-- Rename child snapshots with same name -->
+            <div class="mt-2 col-span-1">
+                <div class="flex flex-row justify-between">
+                    <label :for="getIdKey('rename-children')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Rename child snapshots with same name</label>
+                    <PfSwitch
+                        :modelValue="renameChildSnaps"
+                        @update:modelValue="renameChildSnaps = $event"
+                        :id="getIdKey('rename-children')"
+                    />
+                </div>
+            </div>
+        </div>
+
+        <template #footer>
             <div class="w-full grid grid-rows-2">
                 <div class="w-full row-start-1">
                     <p class="text-danger" v-if="nameFeedback">{{ nameFeedback }}</p>
@@ -84,14 +60,14 @@
                 </div>
             </div>
         </template>
-    </OldModal>
+    </PfModal>
 </template>
 <script setup lang="ts">
 import { ref, Ref, inject } from 'vue';
 import { convertRawTimestampToString } from '../../composables/helpers';
 import { renameSnapshot } from '../../composables/snapshots';
-import { Switch } from '@headlessui/vue';
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
+import PfSwitch from '../pf/PfSwitch.vue';
 import {ZFSFileSystemInfo} from "../../../../houston-common/houston-common-lib/lib/managers/index"
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
 import { Snapshot } from '../../types';
@@ -122,12 +98,12 @@ async function renameBtn() {
         newName.value = convertRawTimestampToString(props.snapshot.properties.creation.rawTimestamp);
     }
 
-    if (nameCheck(newName.value, parentFS.value)) {   
+    if (nameCheck(newName.value, parentFS.value)) {
         renaming.value = true;
 
         try {
 			const output: any = await renameSnapshot(props.snapshot.name, newName.value);
- 
+
 			if (output == null || output.error) {
 				const errorMessage = output?.error || 'Unknown error';
 				renaming.value = false;
@@ -175,7 +151,7 @@ const nameCheck = (snapshotName, fileSystemParent) => {
             nameFeedback.value = `Name already exists in this location: ${fileSystemParent}.`;
         }
     }
-	
+
     return result;
 }
 
@@ -184,7 +160,7 @@ function snapshotNameExists(snapshotName, fileSystemParent, datasets : ZFSFileSy
 	for (const dataset of datasets) {
 		const existingParentPath = dataset.parentFS;
 		const existingDatasetName = dataset.name.split('/').pop();
-	
+
 		if (existingParentPath === newParentPath && existingDatasetName === snapshotName) {
 			return true;
 		}

@@ -2,184 +2,138 @@
 	<div class="TableDiv">
 		<!-- POOLS -->
 		<div v-if="props.item == 'pool'"
-			class="inline-block min-w-full max-h-96 align-middle border border-default border-collapse overflow-y-auto">
-			<table class="table-auto min-w-full min-h-full divide-y divide-default ">
-				<thead class="bg-well border-collapse">
-					<tr v-if="snapshots.length > 0 && !snapshotsInPoolLoading"
-						class="rounded-md grid grid-cols-7 font-semibold text-white">
-						<th class="py-2 col-span-2 text-center" :class="truncateText" title="Snapshot">Snapshot</th>
-						<th class="py-2 col-span-1 text-center" :class="truncateText" title="Created On">Created On</th>
-						<th class="py-2 col-span-1 text-center" :class="truncateText" title="Used">Used</th>
-						<th class="py-2 col-span-1 text-center" :class="truncateText" title="Referenced">Referenced</th>
-						<th class="py-2 col-span-1 text-center" :class="truncateText" title="Clones">Clones</th>
-						<th class="relative py-2 sm:pr-6 lg:pr-8 rounded-tr-md col-span-1">
-							<span class="sr-only"></span>
+			class="inline-block min-w-full align-middle border border-default border-collapse">
+			<table v-if="snapshots.length > 0 && !snapshotsInPoolLoading"
+				class="pf-v5-c-table pf-m-compact" role="grid">
+				<thead>
+					<tr role="row">
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Snapshot</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Created On</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Used</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Referenced</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Clones</th>
+						<th class="pf-v5-c-table__th pf-v5-c-table__action" role="columnheader" scope="col">
+							<span class="sr-only">Actions</span>
 						</th>
 					</tr>
-					<tr v-if="snapshots.length < 1 && !snapshotsInPoolLoading"
-						class="grid grid-cols-1 items-center justify-center w-full">
-						<p class="bg-accent text-default text-center py-2 justify-self-center w-full">No snapshots
-							found.</p>
-					</tr>
-					<tr v-if="snapshotsInPoolLoading"
-						class="rounded-md flex bg-well justify-center justify-self-center w-full">
-						<LoadingSpinner :width="'w-10'" :height="'h-10'" :baseColor="'text-gray-200'"
-							:fillColor="'fill-slate-500'" />
-					</tr>
 				</thead>
-				<tbody class="divide-y divide-default bg-default border-collapse">
-					<tr v-if="snapshots.length > 0 && !snapshotsInPoolLoading"
-						v-for="snapshot, snapshotIdx in snapshots" :key="snapshotIdx"
-						class="text-default grid grid-cols-7 justify-center items-center">
-						<td class="py-1 px-3 text-sm font-medium text-default text-left col-span-2"
-							:class="truncateText" :title="snapshot.name">
+				<tbody role="rowgroup">
+					<tr v-for="(snapshot, snapshotIdx) in snapshots" :key="snapshotIdx"
+						class="pf-v5-c-table__tr" role="row">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Snapshot'" :class="truncateText" :title="snapshot.name">
 							{{ snapshot.name }}
 						</td>
-						<td class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.creation.parsed">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Created On'" :class="truncateText" :title="snapshot.properties.creation.parsed">
 							{{ snapshot.properties.creation.parsed }}
 						</td>
-						<td class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.used.value">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Used'" :class="truncateText" :title="snapshot.properties.used.value">
 							{{ snapshot.properties.used.value }}
 						</td>
-						<td class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.referenced.value">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Referenced'" :class="truncateText" :title="snapshot.properties.referenced.value">
 							{{ snapshot.properties.referenced.value }}
 						</td>
-						<td class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.clones">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Clones'" :class="truncateText" :title="snapshot.properties.clones">
 							{{ snapshot.properties.clones.length > 0 ? snapshot.properties.clones : '-' }}
 						</td>
-						<td
-							class="relative py-1 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 col-span-1 justify-self-end">
-							<Menu as="div" class="relative inline-block text-right">
-								<div>
-									<MenuButton
-										class="flex items-center rounded-full bg-default p-2 text-default hover:text-default focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-										<span class="sr-only">Open options</span>
-										<EllipsisVerticalIcon class="w-5" aria-hidden="true" />
-									</MenuButton>
-								</div>
-
-								<transition enter-active-class="transition ease-out duration-100"
-									enter-from-class="transform opacity-0 scale-95"
-									enter-to-class="transform opacity-100 scale-100"
-									leave-active-class="transition ease-in duration-75"
-									leave-from-class="transform opacity-100 scale-100"
-									leave-to-class="transform opacity-0 scale-95">
-									<MenuItems @click.stop
-										class="absolute right-0 z-10 mt-2 w-max origin-top-left rounded-md bg-accent shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-										<div class="py-1">
-											<!-- <MenuItem as="div" v-slot="{ active }" >
-												<a href="#" @click="cloneThisSnapshot(snapshot)" :class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Clone Snapshot</a>
-											</MenuItem> -->
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="renameThisSnapshot(snapshot)"
-												:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Rename
-												Snapshot</a>
-											</MenuItem>
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="rollbackThisSnapshot(snapshot)"
-												:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Roll
-												Back Snapshot</a>
-											</MenuItem>
-											<!-- <MenuItem as="div" v-slot="{ active }" >
-												<a href="#" @click="sendThisDataset(snapshot)" :class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Send Snapshot</a>
-											</MenuItem> -->
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="destroyThisSnapshot(snapshot)"
-												:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Destroy
-												Snapshot</a>
-											</MenuItem>
-										</div>
-									</MenuItems>
-								</transition>
-							</Menu>
+						<td class="pf-v5-c-table__td pf-v5-c-table__action" role="cell">
+							<PfDropdownMenu
+								:items="getPoolSnapshotActions(snapshot)"
+								:kebab="true"
+							/>
 						</td>
 					</tr>
 				</tbody>
 			</table>
+			<div v-if="snapshots.length < 1 && !snapshotsInPoolLoading"
+				class="pf-v5-c-empty-state pf-m-sm">
+				<div class="pf-v5-c-empty-state__content">
+					<h2 class="pf-v5-c-empty-state__header pf-v5-c-title pf-m-lg">No snapshots found.</h2>
+				</div>
+			</div>
+			<div v-if="snapshotsInPoolLoading"
+				class="flex bg-well justify-center w-full p-4">
+				<LoadingSpinner :width="'w-10'" :height="'h-10'" :baseColor="'text-gray-200'"
+					:fillColor="'fill-slate-500'" />
+			</div>
 		</div>
 
 		<!-- FILESYSTEMS -->
-		<div v-if="props.item == 'filesystem'" class="inline-block min-w-full max-h-3/4 align-middle border-collapse"
-			:class="{ 'overflow-y-scroll': snapshotsInFilesystem.length > 15 }">
-			<table v-if="!snapshotsInDatasetLoaded && !snapshotNotFound"
-				class="table-auto min-w-full min-h-full divide-y divide-default">
-				<tr class="rounded-md flex bg-well justify-center">
-					<LoadingSpinner :width="'w-10'" :height="'h-10'" :baseColor="'text-gray-200'"
-						:fillColor="'fill-slate-500'" />
-				</tr>
-			</table>
+		<div v-if="props.item == 'filesystem'" class="inline-block min-w-full align-middle border-collapse">
+			<div v-if="!snapshotsInDatasetLoaded && !snapshotNotFound"
+				class="flex bg-well justify-center w-full p-4">
+				<LoadingSpinner :width="'w-10'" :height="'h-10'" :baseColor="'text-gray-200'"
+					:fillColor="'fill-slate-500'" />
+			</div>
 			<table v-if="snapshotsInFilesystem.length > 0 && snapshotsInDatasetLoaded"
-				class="table-auto min-w-full min-h-full divide-y divide-default">
-				<thead class="bg-secondary border-collapse">
-					<tr class="rounded-md grid grid-cols-8 font-semibold text-white">
-						<th class="py-2 col-span-2 text-center" :class="truncateText" title="Snapshot">Snapshot</th>
-						<th class="py-2 col-span-1 text-center" :class="truncateText" title="Created On">Created On</th>
-						<th class="py-2 col-span-1 text-center" :class="truncateText" title="Used">Used</th>
-						<th class="py-2 col-span-1 text-center" :class="truncateText" title="Referenced">Referenced</th>
-						<th v-if="!bulkSnapDestroyMode.get(props.filesystem!.name)" class="py-2 col-span-2 text-center"
-							:class="truncateText" title="Clones">Clones</th>
-						<th v-if="bulkSnapDestroyMode.get(props.filesystem!.name)" class="py-2 col-span-1 text-center"
-							:class="truncateText" title="Clones">Clones</th>
-						<th v-if="bulkSnapDestroyMode.get(props.filesystem!.name)" class="py-2 col-span-1 text-center"
-							:class="truncateText" title="Select">Select</th>
-						<th v-if="bulkSnapDestroyMode.get(props.filesystem!.name)"
-							class="py-2 col-span-1 text-center flex flex-col">
-							<label class="flex flex-row items-center w-full h-full rounded-lg"
-								:class="checkboxSelectedAllClass">
-								<input type="checkbox" v-model="isSelectAllChecked" @change="toggleSelectAll"
-									class="w-4 h-4 mr-2 text-success border-default rounded focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2" />
-								Select All
-							</label>
-							<button v-if="bulkSnapDestroyMode.get(props.filesystem!.name) && canDestructive"
-								:disabled="selectedForDestroy.length == 0 || operationRunning"
-								@click="destroySelectedSnapshots()" name="destroy-multiple-snaps-btn"
-								class="btn btn-danger h-min w-full text-xs">
-								<span v-if="!operationRunning">Destroy Selected</span>
-								<span v-else>
-									Destroying {{ bulkDestroyProcessed }} / {{ bulkDestroyTotal }} snapshots...
-								</span>
-							</button>
+				class="pf-v5-c-table pf-m-compact" role="grid">
+				<thead>
+					<tr role="row">
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Snapshot</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Created On</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Used</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Referenced</th>
+						<th class="pf-v5-c-table__th" role="columnheader" scope="col">Clones</th>
+						<th v-if="bulkSnapDestroyMode.get(props.filesystem!.name)" class="pf-v5-c-table__th" role="columnheader" scope="col">Select</th>
+						<th v-if="bulkSnapDestroyMode.get(props.filesystem!.name)" class="pf-v5-c-table__th" role="columnheader" scope="col">
+							<div class="flex flex-col">
+								<label class="flex flex-row items-center w-full h-full rounded-lg"
+									:class="checkboxSelectedAllClass">
+									<input type="checkbox" v-model="isSelectAllChecked" @change="toggleSelectAll"
+										class="w-4 h-4 mr-2 text-success border-default rounded focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2" />
+									Select All
+								</label>
+								<button v-if="bulkSnapDestroyMode.get(props.filesystem!.name) && canDestructive"
+									:disabled="selectedForDestroy.length == 0 || operationRunning"
+									@click="destroySelectedSnapshots()" name="destroy-multiple-snaps-btn"
+									class="btn btn-danger h-min w-full text-xs">
+									<span v-if="!operationRunning">Destroy Selected</span>
+									<span v-else>
+										Destroying {{ bulkDestroyProcessed }} / {{ bulkDestroyTotal }} snapshots...
+									</span>
+								</button>
+							</div>
 						</th>
-						<th v-else class="relative py-2 sm:pr-6 lg:pr-8 rounded-tr-md col-span-1">
-							<span class="sr-only"></span>
+						<th v-if="!bulkSnapDestroyMode.get(props.filesystem!.name)" class="pf-v5-c-table__th pf-v5-c-table__action" role="columnheader" scope="col">
+							<span class="sr-only">Actions</span>
 						</th>
 					</tr>
 				</thead>
-				<tbody class="divide-y divide-default bg-accent border-collapse">
-					<tr v-for="snapshot, snapshotIdx in snapshotsInFilesystem" :key="snapshotIdx"
-						class="text-default grid grid-cols-8 justify-center items-center">
-						<td class="py-1 px-3 text-sm font-medium text-default text-left col-span-2"
-							:class="truncateText" :title="snapshot.name">
+				<tbody role="rowgroup">
+					<tr v-for="(snapshot, snapshotIdx) in snapshotsInFilesystem" :key="snapshotIdx"
+						class="pf-v5-c-table__tr" role="row">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Snapshot'" :class="truncateText" :title="snapshot.name">
 							{{ snapshot.name }}
 						</td>
-						<td class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.creation.parsed">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Created On'" :class="truncateText" :title="snapshot.properties.creation.parsed">
 							{{ snapshot.properties.creation.parsed }}
 						</td>
-						<td class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.used.value">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Used'" :class="truncateText" :title="snapshot.properties.used.value">
 							{{ snapshot.properties.used.value }}
 						</td>
-						<td class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.referenced.value">
+						<td class="pf-v5-c-table__td" role="cell"
+							:data-label="'Referenced'" :class="truncateText" :title="snapshot.properties.referenced.value">
 							{{ snapshot.properties.referenced.value }}
 						</td>
 						<td v-if="!bulkSnapDestroyMode.get(props.filesystem!.name)"
-							class="py-1 px-3 text-sm text-default text-center col-span-2" :class="truncateText"
-							:title="snapshot.properties.clones">
+							class="pf-v5-c-table__td" role="cell"
+							:data-label="'Clones'" :class="truncateText" :title="snapshot.properties.clones">
 							{{ snapshot.properties.clones.length > 0 ? snapshot.properties.clones : '-' }}
 						</td>
 						<td v-if="bulkSnapDestroyMode.get(props.filesystem!.name)"
-							class="py-1 px-3 text-sm text-default text-center col-span-1" :class="truncateText"
-							:title="snapshot.properties.clones">
+							class="pf-v5-c-table__td" role="cell"
+							:data-label="'Clones'" :class="truncateText" :title="snapshot.properties.clones">
 							{{ snapshot.properties.clones.length > 0 ? snapshot.properties.clones : '-' }}
 						</td>
 						<td v-if="bulkSnapDestroyMode.get(props.filesystem!.name)"
-							class="text-sm text-default text-center col-span-1 p-0">
+							class="pf-v5-c-table__td" role="cell">
 							<label
 								class="flex justify-center items-center w-full h-full py-2 rounded-lg border border-default bg-well"
 								:class="checkboxSelectedClass(snapshot.name)">
@@ -187,59 +141,12 @@
 									class="w-4 h-4 text-success border-default rounded focus:ring-green-500 dark:focus:ring-green-600 focus:ring-2" />
 							</label>
 						</td>
-						<td
-							class="relative py-1 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 col-span-1 justify-self-end">
-							<Menu as="div" class="relative inline-block text-right">
-								<div>
-									<MenuButton @click.stop :disabled="!canDestructive" :aria-disabled="!canDestructive"
-										:title="!canDestructive ? 'Requires administrative privileges' : ''" :class="[
-											'flex items-center rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-gray-100',
-											canDestructive ? 'bg-accent hover:text-white cursor-pointer'
-												: 'bg-accent/60 text-muted cursor-not-allowed'
-										]">
-										<span class="sr-only">Open options</span>
-										<EllipsisVerticalIcon class="w-5" aria-hidden="true" />
-									</MenuButton>
-								</div>
-
-								<transition enter-active-class="transition ease-out duration-100"
-									enter-from-class="transform opacity-0 scale-95"
-									enter-to-class="transform opacity-100 scale-100"
-									leave-active-class="transition ease-in duration-75"
-									leave-from-class="transform opacity-100 scale-100"
-									leave-to-class="transform opacity-0 scale-95">
-									<MenuItems
-										class="absolute right-0 z-10 mt-2 w-max origin-top-left rounded-md bg-accent shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-										<div class="py-1">
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="cloneThisSnapshot(snapshot)"
-												:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Clone
-												Snapshot</a>
-											</MenuItem>
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="renameThisSnapshot(snapshot)"
-												:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Rename
-												Snapshot</a>
-											</MenuItem>
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="rollbackThisSnapshot(snapshot)"
-												:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Roll
-												Back Snapshot</a>
-											</MenuItem>
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="sendThisDataset(snapshot)"
-												:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Send
-												Snapshot</a>
-											</MenuItem>
-											<MenuItem as="div" v-slot="{ active }">
-											<a href="#" @click="destroyThisSnapshot(snapshot)"
-												:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Destroy
-												Snapshot</a>
-											</MenuItem>
-										</div>
-									</MenuItems>
-								</transition>
-							</Menu>
+						<td v-if="!bulkSnapDestroyMode.get(props.filesystem!.name)"
+							class="pf-v5-c-table__td pf-v5-c-table__action" role="cell">
+							<PfDropdownMenu
+								:items="getFilesystemSnapshotActions(snapshot)"
+								:kebab="true"
+							/>
 						</td>
 					</tr>
 				</tbody>
@@ -252,8 +159,11 @@
 					Destroying {{ bulkDestroyProcessed }} / {{ bulkDestroyTotal }} snapshots...
 				</span>
 			</button>
-			<div v-if="snapshotsInFilesystem.length === 0 && snapshotNotFound" class="text-center bg-well">
-				<p>No snapshots found.</p>
+			<div v-if="snapshotsInFilesystem.length === 0 && snapshotNotFound"
+				class="pf-v5-c-empty-state pf-m-sm">
+				<div class="pf-v5-c-empty-state__content">
+					<h2 class="pf-v5-c-empty-state__header pf-v5-c-title pf-m-lg">No snapshots found.</h2>
+				</div>
 			</div>
 		</div>
 
@@ -299,11 +209,11 @@
 </template>
 <script setup lang="ts">
 import { ref, inject, Ref, provide, watch, onMounted } from 'vue';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
-import { EllipsisVerticalIcon } from '@heroicons/vue/24/outline';
 import { loadSnapshotsInPool, loadSnapshotsInDataset } from '../../composables/loadData';
 import { destroySnapshot, rollbackSnapshot } from '../../composables/snapshots';
 import LoadingSpinner from '../common/LoadingSpinner.vue';
+import PfDropdownMenu from '../pf/PfDropdownMenu.vue';
+import type { DropdownMenuItem } from '../pf/PfDropdownMenu.vue';
 import { ZPool,ZFSFileSystemInfo} from "@45drives/houston-common-lib"
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
 import { Snapshot, ConfirmationCallback } from '../../types';
@@ -319,6 +229,25 @@ interface SnapshotsListProps {
 const props = defineProps<SnapshotsListProps>();
 const truncateText = inject<Ref<string>>('style-truncate-text')!;
 const canDestructive = inject<Ref<boolean>>('can-destructive')!;
+
+function getPoolSnapshotActions(snapshot: Snapshot): DropdownMenuItem[] {
+	return [
+		{ label: 'Rename Snapshot', action: () => renameThisSnapshot(snapshot) },
+		{ label: 'Roll Back Snapshot', action: () => rollbackThisSnapshot(snapshot) },
+		{ label: 'Destroy Snapshot', action: () => destroyThisSnapshot(snapshot) },
+	];
+}
+
+function getFilesystemSnapshotActions(snapshot: Snapshot): DropdownMenuItem[] {
+	return [
+		{ label: 'Clone Snapshot', action: () => cloneThisSnapshot(snapshot), disabled: !canDestructive.value, tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined },
+		{ label: 'Rename Snapshot', action: () => renameThisSnapshot(snapshot), disabled: !canDestructive.value, tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined },
+		{ label: 'Roll Back Snapshot', action: () => rollbackThisSnapshot(snapshot), disabled: !canDestructive.value, tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined },
+		{ label: 'Send Snapshot', action: () => sendThisDataset(snapshot), disabled: !canDestructive.value, tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined },
+		{ label: 'Destroy Snapshot', action: () => destroyThisSnapshot(snapshot), disabled: !canDestructive.value, tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined },
+	];
+}
+
 ////////////////// Loading Data /////////////////////
 /////////////////////////////////////////////////////
 const snapshotsInPoolLoading = ref(false);
@@ -345,7 +274,7 @@ onMounted(async () => {
         } else if (props.item === 'filesystem') {
 			snapshotsInFilesystem.value = [];
             await loadSnapshotsInDataset(snapshotsInFilesystem, props.filesystem!.name,snapshotNotFound,snapshotsInDatasetLoaded);
-			
+
         } else if (props.item == 'singleSnap') {
 		selectedSnapshot.value = snapshots.value.find(snapshot => snapshot.name == props.singleSnap!.name);
 	}
@@ -383,7 +312,7 @@ async function destroyThisSnapshot(snapshot) {
 	// console.log("snapshot: ", snapshot)
 	operationRunning.value = false;
 	selectedSnapshot.value = snapshot;
-	
+
 	if (selectedSnapshot.value!.properties.clones.length > 0) {
 		hasChildren.value = true;
 	}

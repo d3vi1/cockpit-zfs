@@ -1,82 +1,78 @@
 <template>
-    <OldModal :isOpen="showSendDataset" @close="showSendDataset = false" :marginTop="'mt-28'" :width="'w-5/12'" :minWidth="'min-w-5/12'" :closeOnBackgroundClick="false">
-        <template v-slot:title>
-            <legend class="flex justify-center">Send Dataset</legend>
-        </template>
-        <template v-slot:content>
-            <div class="grid grid-cols-2 justify-between">
-                <div class="mt-2 col-span-1">
-                    <!-- Sending Snapshot: (self) -->
-                    <label :for="getIdKey('sending-dataset-name')" class="mt-1 block text-sm font-medium leading-6 text-default">Snapshot To Send:</label>
-                    <label :id="getIdKey('sending-dataset-name')" class="mt-1 block text-sm font-base leading-6 text-default" :class="truncateText" :title="sendName">{{sendName}}</label>
+    <PfModal :isOpen="showSendDataset" @close="showSendDataset = false" title="Send Dataset" variant="large">
+        <div class="grid grid-cols-2 justify-between">
+            <div class="mt-2 col-span-1">
+                <!-- Sending Snapshot: (self) -->
+                <label :for="getIdKey('sending-dataset-name')" class="mt-1 block text-sm font-medium leading-6 text-default">Snapshot To Send:</label>
+                <label :id="getIdKey('sending-dataset-name')" class="mt-1 block text-sm font-base leading-6 text-default" :class="truncateText" :title="sendName">{{sendName}}</label>
+            </div>
+            <div class="mt-2 col-span-1 justify-self-center">
+                <button id="test-ssh" class="mt-3 btn btn-secondary h-fit" @click="showTestSSHModal()">Test Passwordless SSH</button>
+            </div>
+            <div class="mt-2 col-span-2">
+                <!-- Receiving Dataset: [User Supplied] -->
+                <label :for="getIdKey('receiving-dataset-name')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving Dataset:</label>
+                <input @keydown.enter="" @change="doesRecvDatasetExist()" :id="getIdKey('receiving-dataset-name')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-dataset-name" v-model="destinationName" placeholder="Destination Name Here" />
+                <p v-if="invalidConfig" class="mt-1 text-sm text-danger">{{ invalidConfigMsg }}</p>
+                <p v-if="invalidDest" class="mt-1 text-sm text-danger">{{ invalidDestMsg }}</p>
+                <p v-if="invalidConfig" class="mt-1 text-sm text-muted"><i>{{ mostRecentDestSnapMsg }}</i></p>
+                <p v-if="invalidConfig" class="mt-1 text-sm text-danger">{{ useForceOverwriteMsg }}</p>
+            </div>
+            <div class="mt-2 col-span-2">
+                <!-- Receiving Host: (Optional-> If Empty, then Local) -->
+                <label :for="getIdKey('receiving-host-name')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving Host:</label>
+                <input @keydown.enter="" :id="getIdKey('receiving-host-name')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-host-name" v-model="destinationHost" placeholder="(Leave empty if sending locally.)" />
+            </div>
+            <div class="mt-2 col-span-2">
+                <!-- Host User -->
+                <label :for="getIdKey('receiving-host-user')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving User:</label>
+                <input @keydown.enter="" :id="getIdKey('receiving-host-user')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-host-user" v-model="destinationHostUser" placeholder="Destination Host User" />
+            </div>
+            <div class="mt-2 col-span-2">
+                <!-- Receiving Port: [Default -> 22, User Can Change]-->
+                <label :for="getIdKey('receiving-port')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving Port:</label>
+                <input @keydown.enter="" :id="getIdKey('receiving-port')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-port" v-model="destinationPort" />
+            </div>
+            <!-- If Remote Send, have mBuffer size configurable -->
+            <div v-if="destinationHost != ''" class="mt-2 grid grid-cols-4 gap-2 col-span-2">
+                <div class="col-span-2 grid grid-cols-2 justify-items-center">
+                    <label :for="getIdKey('mbuffer-size')" class="mt-1 text-sm font-medium leading-6 text-default w-full col-span-1">mBuffer Size:</label>
+                    <input @keydown.enter="" :id="getIdKey('mbuffer-size')" type="number" class="input-textlike bg-default mt-1 w-full py-1.5 px-1.5 text-default col-span-1" name="mbuffer-size" v-model="mBufferSize" />
                 </div>
-                <div class="mt-2 col-span-1 justify-self-center">
-                    <button id="test-ssh" class="mt-3 btn btn-secondary h-fit" @click="showTestSSHModal()">Test Passwordless SSH</button>
-                </div>
-                <div class="mt-2 col-span-2">
-                    <!-- Receiving Dataset: [User Supplied] -->
-                    <label :for="getIdKey('receiving-dataset-name')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving Dataset:</label>
-                    <input @keydown.enter="" @change="doesRecvDatasetExist()" :id="getIdKey('receiving-dataset-name')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-dataset-name" v-model="destinationName" placeholder="Destination Name Here" />
-                    <p v-if="invalidConfig" class="mt-1 text-sm text-danger">{{ invalidConfigMsg }}</p>
-                    <p v-if="invalidDest" class="mt-1 text-sm text-danger">{{ invalidDestMsg }}</p>
-                    <p v-if="invalidConfig" class="mt-1 text-sm text-muted"><i>{{ mostRecentDestSnapMsg }}</i></p>
-                    <p v-if="invalidConfig" class="mt-1 text-sm text-danger">{{ useForceOverwriteMsg }}</p>
-                </div>
-                <div class="mt-2 col-span-2">
-                    <!-- Receiving Host: (Optional-> If Empty, then Local) -->
-                    <label :for="getIdKey('receiving-host-name')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving Host:</label>
-                    <input @keydown.enter="" :id="getIdKey('receiving-host-name')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-host-name" v-model="destinationHost" placeholder="(Leave empty if sending locally.)" />
-                </div>
-                <div class="mt-2 col-span-2">
-                    <!-- Host User -->
-                    <label :for="getIdKey('receiving-host-user')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving User:</label>
-                    <input @keydown.enter="" :id="getIdKey('receiving-host-user')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-host-user" v-model="destinationHostUser" placeholder="Destination Host User" />
-                </div>
-                <div class="mt-2 col-span-2">
-                    <!-- Receiving Port: [Default -> 22, User Can Change]-->
-                    <label :for="getIdKey('receiving-port')" class="mt-1 block text-sm font-medium leading-6 text-default">Receiving Port:</label>
-                    <input @keydown.enter="" :id="getIdKey('receiving-port')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="receiving-port" v-model="destinationPort" />
-                </div>
-                <!-- If Remote Send, have mBuffer size configurable -->
-                <div v-if="destinationHost != ''" class="mt-2 grid grid-cols-4 gap-2 col-span-2">
-                    <div class="col-span-2 grid grid-cols-2 justify-items-center">
-                        <label :for="getIdKey('mbuffer-size')" class="mt-1 text-sm font-medium leading-6 text-default w-full col-span-1">mBuffer Size:</label>
-                        <input @keydown.enter="" :id="getIdKey('mbuffer-size')" type="number" class="input-textlike bg-default mt-1 w-full py-1.5 px-1.5 text-default col-span-1" name="mbuffer-size" v-model="mBufferSize" />
-                    </div>
-                    <div class="col-span-2 grid grid-cols-2 justify-items-center">
-                        <label :for="getIdKey('mbuffer-unit')" class="mt-1 text-sm font-medium leading-6 text-default w-full col-span-1">mBuffer Unit:</label>
-                        <select :id="getIdKey('mbuffer-unit')" name="mbuffer-unit" class="text-default bg-default mt-1 w-full input-textlike col-span-1" v-model="mBufferUnit">
-                            <option value="b">b</option>
-                            <option value="k">k</option>
-                            <option value="M">M</option>
-                            <option value="G">G</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mt-2 grid grid-flow-col col-span-2">
-                    <!-- Send Compressed: [Checkbox -> (-Lce) options] *** Cannot be used if Encrypted -->
-                    <label :for="getIdKey('send-compressed-toggle')" class="mt-1 block text-sm font-medium leading-6 text-default col-span-1">
-                        Send Compressed:
-                        <input :id="getIdKey('send-compressed-toggle')" v-model="sendCompressed" @change="handleCheckboxChange('sendCompressed')" type="checkbox" class="ml-2 w-5 h-5 text-success bg-well border-default rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2" />
-                    </label>
-                    <!-- Send Raw: [Checkbox -> (-w) option] *** If Encrypted, force this mode -->
-                    <label :for="getIdKey('send-raw-toggle')" class="mt-1 block text-sm font-medium leading-6 text-default col-span-1">
-                        Send Raw:
-                        <input :id="getIdKey('send-raw-toggle')" v-model="sendRaw" @change="handleCheckboxChange('sendRaw')" type="checkbox" class="ml-2 w-5 h-5 text-success bg-well border-default rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2" />
-                    </label>
-                    <!-- Force Overwrite: [Checkbox -> (-F) option] -->
-                    <label v-if="invalidConfig" :for="getIdKey('force-overwrite-toggle')" class="mt-1 block text-sm font-medium leading-6 text-danger col-span-1">
-                        Force Overwrite:
-                        <input :id="getIdKey('force-overwrite-toggle')" v-model="forceOverwrite" type="checkbox" class="ml-2 w-5 h-5 text-success bg-well border-default rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2" />
-                    </label>
-                </div>
-                <div class="mt-2 col-span-2">
-                    <p v-if="invalidFlags" class="mt-1 text-sm text-danger">{{ invalidFlagMsg }}</p>
+                <div class="col-span-2 grid grid-cols-2 justify-items-center">
+                    <label :for="getIdKey('mbuffer-unit')" class="mt-1 text-sm font-medium leading-6 text-default w-full col-span-1">mBuffer Unit:</label>
+                    <select :id="getIdKey('mbuffer-unit')" name="mbuffer-unit" class="text-default bg-default mt-1 w-full input-textlike col-span-1" v-model="mBufferUnit">
+                        <option value="b">b</option>
+                        <option value="k">k</option>
+                        <option value="M">M</option>
+                        <option value="G">G</option>
+                    </select>
                 </div>
             </div>
-        </template>
-        <template v-slot:footer>
+
+            <div class="mt-2 grid grid-flow-col col-span-2">
+                <!-- Send Compressed: [Checkbox -> (-Lce) options] *** Cannot be used if Encrypted -->
+                <label :for="getIdKey('send-compressed-toggle')" class="mt-1 block text-sm font-medium leading-6 text-default col-span-1">
+                    Send Compressed:
+                    <input :id="getIdKey('send-compressed-toggle')" v-model="sendCompressed" @change="handleCheckboxChange('sendCompressed')" type="checkbox" class="ml-2 w-5 h-5 text-success bg-well border-default rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2" />
+                </label>
+                <!-- Send Raw: [Checkbox -> (-w) option] *** If Encrypted, force this mode -->
+                <label :for="getIdKey('send-raw-toggle')" class="mt-1 block text-sm font-medium leading-6 text-default col-span-1">
+                    Send Raw:
+                    <input :id="getIdKey('send-raw-toggle')" v-model="sendRaw" @change="handleCheckboxChange('sendRaw')" type="checkbox" class="ml-2 w-5 h-5 text-success bg-well border-default rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2" />
+                </label>
+                <!-- Force Overwrite: [Checkbox -> (-F) option] -->
+                <label v-if="invalidConfig" :for="getIdKey('force-overwrite-toggle')" class="mt-1 block text-sm font-medium leading-6 text-danger col-span-1">
+                    Force Overwrite:
+                    <input :id="getIdKey('force-overwrite-toggle')" v-model="forceOverwrite" type="checkbox" class="ml-2 w-5 h-5 text-success bg-well border-default rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2" />
+                </label>
+            </div>
+            <div class="mt-2 col-span-2">
+                <p v-if="invalidFlags" class="mt-1 text-sm text-danger">{{ invalidFlagMsg }}</p>
+            </div>
+        </div>
+
+        <template #footer>
             <div class="button-group-row w-full row-start-2 justify-between mt-2">
                 <button id="cancel" class="mt-1 btn btn-danger object-left justify-start h-fit" @click="showSendDataset = false">Cancel</button>
 
@@ -99,7 +95,7 @@
                 </button>
             </div>
         </template>
-    </OldModal>
+    </PfModal>
 
     <div v-if="showTestSSH">
         <component :is="testSSHComponent" @close="updateShowTestSSH" :idKey="'test-ssh-modal'" :showFlag="showTestSSH" />
@@ -107,7 +103,7 @@
 
 </template>
 <script setup lang="ts">
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
 import { legacy } from '@45drives/houston-common-lib';
 import { ref, Ref, inject, computed } from 'vue';
 import { sendSnapshot, doesDatasetExist, formatRecentSnaps, doesDatasetHaveSnaps } from '../../composables/snapshots';
@@ -237,7 +233,7 @@ async function doesRemoteDatasetExist() {
         return await doesDatasetExist(sendingData.value);
     } catch (error) {
         console.error('Error checking dataset', error);
-        return false; 
+        return false;
     }
 }
 
@@ -246,7 +242,7 @@ async function doesRemoteDatasetHaveSnaps() {
         return await doesDatasetHaveSnaps(sendingData.value);
     } catch (error) {
         console.error('Error checking dataset', error);
-        return false; 
+        return false;
     }
 }
 
@@ -282,7 +278,7 @@ async function setSendData() {
         } else {
             sendingData.value.recvPort = '22';
         }
-       
+
         if (sourceDataset.value!.encrypted) {
             sendRaw.value = true;
             sendCompressed.value = false;
@@ -442,7 +438,7 @@ function compareLocalTimestamp(destinationDatasetSnaps : Snapshot[], sourceDatas
                 });
                 // console.log('local sourceSnapMatch:', sourceSnapMatch.value);
                 return sourceSnapMatch.value;
-                
+
             } else if (mostRecentLocalDestSnap.value.guid == sourceSendSnap.guid) {
                 // console.log('sendSnap is the same as mostRecentDestSnap');
                 return null;
@@ -455,7 +451,7 @@ function compareLocalTimestamp(destinationDatasetSnaps : Snapshot[], sourceDatas
         console.log('no snaps to match');
         return null;
     }
-  
+
 }
 
 async function compareRemoteTimestamp(snapSnips : SnapSnippet[], sourceDatasetSnaps : Snapshot[], sourceSendSnap : Snapshot) {
@@ -477,10 +473,10 @@ async function compareRemoteTimestamp(snapSnips : SnapSnippet[], sourceDatasetSn
                 const sourceSnapMatch = computed(() => {
                     const source = sourceDatasetSnaps.find(snap => snap.guid == mostRecentRemoteDestSnap.value!.guid);
                     // console.log('source', source);
-                    return source; 
+                    return source;
                 });
                 // console.log('remote sourceSnapMatch:', sourceSnapMatch.value);
-                
+
                 if (sourceSnapMatch.value == undefined) {
                     return null;
                 } else {
@@ -585,7 +581,7 @@ async function readSendProgress(sendProgressData : SendProgress[], fileReader: I
     try {
         let initialRun = true;
         let nullRun = true;
-       
+
         function fillProgressArray(content, sendProgressData : SendProgress[]) {
             if (initialRun && nullRun) {
                 initialRun = false;
@@ -602,7 +598,7 @@ async function readSendProgress(sendProgressData : SendProgress[], fileReader: I
                     sendProgressAmount.value = getSendProgress(content.sent)!;
                     // console.log(`content.totalSize: ${content.totalSize}, content.sent: ${content.sent}`);
                     // console.log(`totalSendSize: ${totalSendSize.value}, sendProgAmount: ${sendProgressAmount.value}`);
-                }    
+                }
             }
         }
 
@@ -637,7 +633,7 @@ async function sendAndReadProgress(sendingData : SendingDataset, sendProgress : 
     } catch (error) {
         console.error("An error occurred in sendAndReadProgress:", error);
         // return null;
-        
+
         // return false;
     }
 }

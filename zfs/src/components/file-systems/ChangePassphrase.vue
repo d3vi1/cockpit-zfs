@@ -1,46 +1,42 @@
 <template>
-    <OldModal :isOpen="showChangePassphrase" @close="showChangePassphrase = false" :marginTop="'mt-28'" :width="'w-96'" :minWidth="'min-w-min'" :closeOnBackgroundClick ="false">
-        <template v-slot:title>
-            <legend class="flex justify-center">Change Passphrase</legend>
-        </template>
-        <template v-slot:content>
+    <PfModal :isOpen="showChangePassphrase" @close="showChangePassphrase = false" title="Change Passphrase">
+        <div>
             <div>
-                <div>
-                    <div class="flex flex-row justify-between items-center">
-                        <label :for="getIdKey('passphrase')"
-                            class="mt-1 block text-sm font-medium leading-6 text-default">New Passphrase</label>
-                        <span title="Passphrase requires at least 8 characters.">
-                            <InformationCircleIcon class="ml-2 mt-1 h-6 text-muted" />
-                        </span>
-                    </div>
-
-                    <input :id="getIdKey('passphrase')" type="password" v-model="passphrase" name="passphrase"
-                        class="mt-1 block w-full input-textlike bg-default" placeholder="Passphrase" />
+                <div class="flex flex-row justify-between items-center">
+                    <label :for="getIdKey('passphrase')"
+                        class="mt-1 block text-sm font-medium leading-6 text-default">New Passphrase</label>
+                    <span title="Passphrase requires at least 8 characters.">
+                        <InformationCircleIcon class="ml-2 mt-1 h-6 text-muted" />
+                    </span>
                 </div>
 
-                <div>
-                    <div class="flex flex-row justify-between items-center">
-                        <label :for="getIdKey('passphrase-confirm')"
-                            class="mt-1 block text-sm font-medium leading-6 text-default">Confirm New Passphrase</label>
-                        <span title="Passphrase requires at least 8 characters.">
-                            <InformationCircleIcon class="ml-2 mt-1 h-6 text-muted" />
-                        </span>
-                    </div>
-
-                    <input :id="getIdKey('passphrase-confirm')" type="password" @keydown.enter="changeBtn()"
-                        v-model="passphraseConfirm" name="passphrase-confirm"
-                        class="mt-1 block w-full input-textlike bg-default" placeholder="Confirm Passphrase" />
-                </div>
-
-                <!-- Important Passphrase Reminder -->
-                <div class="my-2 p-2 text-danger text-sm">
-                    <p><strong>Important:</strong> Please note your passphrase carefully. If it is lost, it
-                        cannot
-                        be retrieved or reset.</p>
-                </div>
+                <input :id="getIdKey('passphrase')" type="password" v-model="passphrase" name="passphrase"
+                    class="mt-1 block w-full input-textlike bg-default" placeholder="Passphrase" />
             </div>
-        </template>
-        <template v-slot:footer>
+
+            <div>
+                <div class="flex flex-row justify-between items-center">
+                    <label :for="getIdKey('passphrase-confirm')"
+                        class="mt-1 block text-sm font-medium leading-6 text-default">Confirm New Passphrase</label>
+                    <span title="Passphrase requires at least 8 characters.">
+                        <InformationCircleIcon class="ml-2 mt-1 h-6 text-muted" />
+                    </span>
+                </div>
+
+                <input :id="getIdKey('passphrase-confirm')" type="password" @keydown.enter="changeBtn()"
+                    v-model="passphraseConfirm" name="passphrase-confirm"
+                    class="mt-1 block w-full input-textlike bg-default" placeholder="Confirm Passphrase" />
+            </div>
+
+            <!-- Important Passphrase Reminder -->
+            <div class="my-2 p-2 text-danger text-sm">
+                <p><strong>Important:</strong> Please note your passphrase carefully. If it is lost, it
+                    cannot
+                    be retrieved or reset.</p>
+            </div>
+        </div>
+
+        <template #footer>
             <div class="w-full grid grid-rows-2">
                 <div class="w-full row-start-1">
                     <div class="button-group-row mt-2 justify-self-center">
@@ -70,11 +66,11 @@
                 </div>
             </div>
         </template>
-    </OldModal>
+    </PfModal>
 </template>
 <script setup lang="ts">
 import { ref, Ref, inject } from 'vue';
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
 import { changePassphrase } from '../../composables/datasets';
 import { InformationCircleIcon } from '@heroicons/vue/24/solid';
 import { ZFSFileSystemInfo } from '@45drives/houston-common-lib';
