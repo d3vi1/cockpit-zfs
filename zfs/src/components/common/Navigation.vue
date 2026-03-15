@@ -1,8 +1,8 @@
 <template>
-	<div class="pf-v5-c-tabs">
+	<div v-if="show" class="pf-v5-c-tabs">
 		<ul class="pf-v5-c-tabs__list" role="tablist">
 			<li
-				v-for="(item, idx) in navItems"
+				v-for="(item, idx) in props.navigationItems"
 				:key="item.name"
 				class="pf-v5-c-tabs__item"
 				:class="{ 'pf-m-current': item.current }"
@@ -11,6 +11,8 @@
 					ref="tabRefs"
 					class="pf-v5-c-tabs__link"
 					role="tab"
+					:id="'pf-tab-' + item.tag"
+					:aria-controls="'pf-tab-panel-' + item.tag"
 					:aria-selected="item.current"
 					:tabindex="item.current ? 0 : -1"
 					@click="navigationCallback(item)"
@@ -24,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { NavigationItem, NavigationCallback } from '../../types';
 
 interface NavigationProps {
@@ -36,8 +38,6 @@ interface NavigationProps {
 
 const props = defineProps<NavigationProps>();
 
-const navItems = computed(() => props.navigationItems);
-
 const tabRefs = ref<HTMLButtonElement[]>([]);
 
 function focusTab(index: number) {
@@ -45,7 +45,8 @@ function focusTab(index: number) {
 }
 
 function onKeydown(event: KeyboardEvent, currentIndex: number) {
-	const count = navItems.value.length;
+	const count = props.navigationItems.length;
+	if (count === 0) return;
 	let targetIndex: number | null = null;
 
 	switch (event.key) {
@@ -67,5 +68,6 @@ function onKeydown(event: KeyboardEvent, currentIndex: number) {
 
 	event.preventDefault();
 	focusTab(targetIndex);
+	props.navigationCallback(props.navigationItems[targetIndex]);
 }
 </script>
