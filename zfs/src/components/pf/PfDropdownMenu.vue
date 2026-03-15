@@ -8,6 +8,7 @@
       type="button"
       :aria-expanded="isExpanded"
       aria-haspopup="true"
+      :aria-label="kebab ? 'Actions' : undefined"
       @click="toggle"
       @keydown="onToggleKeydown"
     >
@@ -80,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
+import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 
 export interface DropdownMenuItem {
   label: string;
@@ -108,9 +109,14 @@ function toggle() {
   isExpanded.value = !isExpanded.value;
 }
 
+function firstEnabledIndex(): number {
+  const idx = props.items.findIndex((item) => !item.disabled);
+  return idx >= 0 ? idx : 0;
+}
+
 function openMenu() {
   isExpanded.value = true;
-  activeIndex.value = 0;
+  activeIndex.value = firstEnabledIndex();
 }
 
 function closeMenu(returnFocus = true) {
@@ -158,19 +164,29 @@ function onMenuKeydown(event: KeyboardEvent, index: number) {
     .filter((entry) => !entry.item.disabled)
     .map((entry) => entry.i);
 
+  if (enabledIndices.length === 0) return;
+
+  const currentPos = enabledIndices.indexOf(index);
+
   switch (event.key) {
     case 'ArrowDown': {
       event.preventDefault();
-      const currentPos = enabledIndices.indexOf(index);
-      const nextPos = currentPos < enabledIndices.length - 1 ? currentPos + 1 : 0;
-      activeIndex.value = enabledIndices[nextPos];
+      if (currentPos === -1) {
+        activeIndex.value = enabledIndices[0];
+      } else {
+        const nextPos = currentPos < enabledIndices.length - 1 ? currentPos + 1 : 0;
+        activeIndex.value = enabledIndices[nextPos];
+      }
       break;
     }
     case 'ArrowUp': {
       event.preventDefault();
-      const currentPos = enabledIndices.indexOf(index);
-      const prevPos = currentPos > 0 ? currentPos - 1 : enabledIndices.length - 1;
-      activeIndex.value = enabledIndices[prevPos];
+      if (currentPos === -1) {
+        activeIndex.value = enabledIndices[enabledIndices.length - 1];
+      } else {
+        const prevPos = currentPos > 0 ? currentPos - 1 : enabledIndices.length - 1;
+        activeIndex.value = enabledIndices[prevPos];
+      }
       break;
     }
     case 'Home': {
@@ -203,7 +219,9 @@ function onDocumentClick(event: MouseEvent) {
   }
 }
 
-document.addEventListener('click', onDocumentClick, true);
+onMounted(() => {
+  document.addEventListener('click', onDocumentClick, true);
+});
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocumentClick, true);

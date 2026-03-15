@@ -8,7 +8,6 @@
       :aria-checked="modelValue"
       :checked="modelValue"
       @change="onToggle"
-      @keydown.space.prevent="onToggle"
     />
     <span class="pf-v5-c-switch__toggle">
       <span class="pf-v5-c-switch__toggle-icon">
@@ -28,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+let _switchUid = 0;
 
 interface PfSwitchProps {
   modelValue: boolean;
@@ -45,7 +44,7 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
 }>();
 
-const switchId = computed(() => props.id || `pf-switch-${Math.random().toString(36).slice(2, 9)}`);
+const switchId = props.id || `pf-switch-${++_switchUid}`;
 
 function onToggle() {
   emit('update:modelValue', !props.modelValue);

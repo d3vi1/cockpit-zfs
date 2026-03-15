@@ -13,6 +13,7 @@
           role="dialog"
           aria-modal="true"
           :aria-labelledby="labelId"
+          tabindex="-1"
           @keydown="onKeydown"
         >
           <!-- Header -->
@@ -60,6 +61,8 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onBeforeUnmount, computed, useSlots } from 'vue';
 
+let _modalUid = 0;
+
 interface PfModalProps {
   isOpen: boolean;
   title: string;
@@ -83,7 +86,7 @@ const modalRef = ref<HTMLElement | null>(null);
 const closeButtonRef = ref<HTMLButtonElement | null>(null);
 let openerElement: HTMLElement | null = null;
 
-const labelId = computed(() => `pf-modal-title-${Math.random().toString(36).slice(2, 9)}`);
+const labelId = `pf-modal-title-${++_modalUid}`;
 
 const variantClass = computed(() => {
   switch (props.variant) {
@@ -147,12 +150,25 @@ function trapFocus(event: KeyboardEvent) {
 
 /* ---- Lifecycle: manage focus & body scroll ---- */
 
+function onFocusIn(event: FocusEvent) {
+  if (!modalRef.value) return;
+  if (!modalRef.value.contains(event.target as Node)) {
+    // Focus escaped the modal; pull it back
+    if (closeButtonRef.value) {
+      closeButtonRef.value.focus();
+    } else {
+      modalRef.value.focus();
+    }
+  }
+}
+
 watch(
   () => props.isOpen,
   async (opened) => {
     if (opened) {
       openerElement = document.activeElement as HTMLElement | null;
       document.body.style.overflow = 'hidden';
+      document.addEventListener('focusin', onFocusIn);
       await nextTick();
       // Focus the close button or the modal itself
       if (closeButtonRef.value) {
@@ -162,6 +178,7 @@ watch(
       }
     } else {
       document.body.style.overflow = '';
+      document.removeEventListener('focusin', onFocusIn);
       // Return focus to the element that opened the modal
       openerElement?.focus();
       openerElement = null;
@@ -172,5 +189,6 @@ watch(
 
 onBeforeUnmount(() => {
   document.body.style.overflow = '';
+  document.removeEventListener('focusin', onFocusIn);
 });
 </script>

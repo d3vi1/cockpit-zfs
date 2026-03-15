@@ -192,7 +192,7 @@
     </PfModal>
 </template>
 <script setup lang="ts">
-import { Ref, inject, ref, computed, watch} from 'vue';
+import { Ref, inject, ref, computed, watch } from 'vue';
 import { upperCaseWord } from '../../composables/helpers';
 import PfModal from '../pf/PfModal.vue';
 import PfSwitch from '../pf/PfSwitch.vue';
@@ -221,7 +221,6 @@ const props = defineProps<UniversalConfirmationProps>();
 const emit = defineEmits(['close']);
 
 const operationRunning = inject<Ref<boolean>>('modal-confirm-running')!;
-const showFlag = ref(props.showFlag);
 
 const closeModal = () => {
     option1Toggle.value = false;
