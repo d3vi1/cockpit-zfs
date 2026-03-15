@@ -1,0 +1,152 @@
+/*
+ * pf-bridge.css
+ *
+ * Maps houston-common-css design tokens to PatternFly 5 CSS custom properties
+ * so that PF components render with the project's existing colour palette.
+ *
+ * Load order (in main.ts):
+ *   1. @patternfly/patternfly/patternfly.css
+ *   2. @patternfly/patternfly/patternfly-addons.css
+ *   3. this file              <-- overrides PF defaults
+ *   4. houston-common-css     <-- Tailwind utilities still work
+ */
+
+/* -------------------------------------------------------------------------- */
+/*  Light-mode overrides (default)                                            */
+/* -------------------------------------------------------------------------- */
+
+:root {
+  /* ---- Global background ---- */
+  --pf-v5-global--BackgroundColor--100: #ffffff;        /* bg-default  -> white */
+  --pf-v5-global--BackgroundColor--200: #e5e7eb;        /* bg-well     -> neutral-200 */
+  --pf-v5-global--BackgroundColor--150: #f5f5f4;        /* bg-accent   -> neutral-100 */
+
+  /* ---- Primary / brand ---- */
+  --pf-v5-global--primary-color--100: #475569;          /* bg-primary  -> slate-600 */
+  --pf-v5-global--primary-color--200: #334155;          /* hover       -> slate-700 */
+
+  /* ---- Danger ---- */
+  --pf-v5-global--danger-color--100: #f43f5e;           /* bg-danger   -> rose-500 */
+  --pf-v5-global--danger-color--200: #e11d48;           /* hover       -> rose-600 */
+
+  /* ---- Success ---- */
+  --pf-v5-global--success-color--100: #16a34a;          /* bg-success  -> green-600 */
+  --pf-v5-global--success-color--200: #15803d;          /* hover       -> green-700 */
+
+  /* ---- Warning ---- */
+  --pf-v5-global--warning-color--100: #f97316;          /* text-warning -> orange-500 */
+  --pf-v5-global--warning-color--200: #ea580c;          /* hover        -> orange-600 */
+
+  /* ---- Info ---- */
+  --pf-v5-global--info-color--100: #3b82f6;             /* icon-info   -> blue-500 */
+
+  /* ---- Text ---- */
+  --pf-v5-global--Color--100: #111827;                  /* text-default -> gray-900 */
+  --pf-v5-global--Color--200: #6b7280;                  /* text-muted   -> gray-500 */
+
+  /* ---- Links ---- */
+  --pf-v5-global--link--Color: #274f87;                 /* text-link */
+  --pf-v5-global--link--Color--hover: #274f87;
+  --pf-v5-global--link--TextDecoration--hover: underline;
+
+  /* ---- Border ---- */
+  --pf-v5-global--BorderColor--100: #e5e7eb;            /* border-default -> neutral-200 */
+  --pf-v5-global--BorderColor--200: #d1d5db;
+  --pf-v5-global--BorderColor--300: #e5e7eb;
+
+  /* ---- Disabled ---- */
+  --pf-v5-global--disabled-color--100: #9ca3af;         /* neutral-400 */
+  --pf-v5-global--disabled-color--200: #d1d5db;         /* neutral-300 */
+  --pf-v5-global--disabled-color--300: #e5e7eb;         /* neutral-200 */
+
+  /* ---- Spacing tokens (align with gap-well = 1rem, gap-buttons = 0.75rem) ---- */
+  --pf-v5-global--spacer--md: 1rem;
+  --pf-v5-global--spacer--sm: 0.75rem;
+
+  /* ---- Font ---- */
+  --pf-v5-global--FontSize--md: 0.875rem;               /* text-sm = 14px */
+  --pf-v5-global--FontWeight--bold: 600;                 /* font-semibold */
+
+  /* ---- Box shadow (match Tailwind shadow-md / shadow-lg) ---- */
+  --pf-v5-global--BoxShadow--sm: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px -1px rgba(0,0,0,.1);
+  --pf-v5-global--BoxShadow--md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -2px rgba(0,0,0,.1);
+  --pf-v5-global--BoxShadow--lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+
+  /* ---- 45Drives brand red (used for bg-45d, text-45d) ---- */
+  --pf-v5-global--palette--red-300: #b91c1c;            /* red-700 */
+  --pf-v5-global--palette--red-200: #991b1b;            /* red-800 */
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Dark-mode overrides                                                       */
+/*  Cockpit / houston-common uses .dark on <html> or <body>.                  */
+/* -------------------------------------------------------------------------- */
+
+.dark {
+  --pf-v5-global--BackgroundColor--100: #262626;        /* bg-default dark -> neutral-800 */
+  --pf-v5-global--BackgroundColor--200: #171717;        /* bg-well dark    -> neutral-900 */
+  --pf-v5-global--BackgroundColor--150: #333333;        /* bg-accent dark */
+
+  --pf-v5-global--primary-color--100: #334155;          /* slate-700 */
+  --pf-v5-global--primary-color--200: #1e293b;          /* slate-800 */
+
+  --pf-v5-global--danger-color--100: #be123c;           /* rose-700 */
+  --pf-v5-global--danger-color--200: #9f1239;           /* rose-800 */
+
+  --pf-v5-global--success-color--100: #22c55e;          /* green-500 */
+  --pf-v5-global--success-color--200: #16a34a;          /* green-600 */
+
+  --pf-v5-global--Color--100: #f3f4f6;                  /* gray-100 */
+  --pf-v5-global--Color--200: #6b7280;                  /* gray-500 */
+
+  --pf-v5-global--link--Color: #3d69a6;
+  --pf-v5-global--link--Color--hover: #3d69a6;
+
+  --pf-v5-global--BorderColor--100: #404040;            /* neutral-700 */
+  --pf-v5-global--BorderColor--200: #525252;
+  --pf-v5-global--BorderColor--300: #404040;
+
+  --pf-v5-global--disabled-color--100: #525252;         /* neutral-600 */
+  --pf-v5-global--disabled-color--200: #404040;         /* neutral-700 */
+  --pf-v5-global--disabled-color--300: #262626;         /* neutral-800 */
+
+  --pf-v5-global--palette--red-300: #991b1b;            /* red-800 */
+  --pf-v5-global--palette--red-200: #7f1d1d;            /* red-900 */
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Component-level bridges                                                   */
+/* -------------------------------------------------------------------------- */
+
+/* Modal backdrop — match the existing bg-gray-500/75 overlay */
+.pf-v5-c-backdrop {
+  --pf-v5-c-backdrop--BackgroundColor: rgba(107, 114, 128, 0.75);
+}
+
+/* Modal box — inherit card-like styling */
+.pf-v5-c-modal-box {
+  --pf-v5-c-modal-box--BackgroundColor: var(--pf-v5-global--BackgroundColor--100);
+  --pf-v5-c-modal-box--BoxShadow: var(--pf-v5-global--BoxShadow--lg);
+  --pf-v5-c-modal-box--BorderRadius: 0.5rem;
+}
+
+/* Switch — use primary for checked track, accent for unchecked */
+.pf-v5-c-switch__input:checked ~ .pf-v5-c-switch__toggle {
+  --pf-v5-c-switch__toggle--BackgroundColor: var(--pf-v5-global--primary-color--100);
+}
+
+/* Menu / Dropdown — subtle hover consistent with bg-default interactive */
+.pf-v5-c-menu__list-item:hover {
+  --pf-v5-c-menu__list-item--hover--BackgroundColor: var(--pf-v5-global--BackgroundColor--150);
+}
+
+/* Buttons — align PF button colours with .btn-primary / .btn-danger */
+.pf-v5-c-button.pf-m-primary {
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--pf-v5-global--primary-color--100);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--pf-v5-global--primary-color--200);
+}
+
+.pf-v5-c-button.pf-m-danger {
+  --pf-v5-c-button--m-danger--BackgroundColor: var(--pf-v5-global--danger-color--100);
+  --pf-v5-c-button--m-danger--hover--BackgroundColor: var(--pf-v5-global--danger-color--200);
+}

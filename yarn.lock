@@ -1206,6 +1206,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/patternfly@npm:^5.4.0":
+  version: 5.4.2
+  resolution: "@patternfly/patternfly@npm:5.4.2"
+  checksum: 10c0/cf104eee8c04b0f0199d249a2cb5adb6a7a809ac45c320f85493672526c624e400e18416e884f1b2ef0779e846994fb50c89907a0e65661e81a5b591899da478
+  languageName: node
+  linkType: hard
+
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -2899,6 +2906,7 @@ __metadata:
     "@45drives/houston-common-ui": "workspace:^"
     "@headlessui/vue": "npm:^1.7.13"
     "@heroicons/vue": "npm:^2.0.18"
+    "@patternfly/patternfly": "npm:^5.4.0"
     "@tailwindcss/forms": "npm:^0.5.2"
     "@vitejs/plugin-vue": "npm:^3.0.0"
     autoprefixer: "npm:^10.4.8"

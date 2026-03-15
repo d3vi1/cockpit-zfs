@@ -1,4 +1,4 @@
-<!-- 
+<!--
     Universal confimation wrapper for Modal component, customizable to fit multiple functions of this ZFS Module.
 
     Provide operation you wish user to confirm and the item you wish to perform the operation on.
@@ -6,193 +6,127 @@
  -->
 
 <template>
-    <OldModal :isOpen="showFlag" @close="closeModal()" :marginTop="'mt-56'" :width="'w-96'" :minWidth="'min-w-min'"
-        :closeOnBackgroundClick="false">
-        <template v-slot:title>
-            <legend class="flex justify-center">{{ upperCaseWord(props.operation) }} {{ upperCaseWord(props.item) }}
-            </legend>
-        </template>
-        <template v-slot:content>
-            <div class="grid grid-flow-row mt-3 text-center">
-                <p v-if="!operation2 && props.item !== 'snapshots'" class="text-default row-start-1"
-                    :class="truncateText" :title="props[props.item].name">Are you sure you wish to {{props.operation}}
-                    <b :class="truncateText" :title="props[props.item].name">{{ props[props.item].name }}</b>?</p>
-                <p v-if="operation2 && props.item !== 'snapshots'" class="text-default row-start-1"
-                    :class="truncateText" :title="props[props.item].name">Are you sure you wish to {{props.operation}}
-                    {{props.operation2!}} on <b :class="truncateText" :title="props[props.item].name">{{
-                        props[props.item].name }}</b>?</p>
+    <PfModal
+        :isOpen="showFlag"
+        :title="`${upperCaseWord(props.operation)} ${upperCaseWord(props.item)}`"
+        variant="small"
+        :showClose="false"
+        @close="closeModal()"
+    >
+        <!-- Body (default slot) -->
+        <div class="grid grid-flow-row mt-3 text-center">
+            <p v-if="!operation2 && props.item !== 'snapshots'" class="text-default row-start-1"
+                :class="truncateText" :title="props[props.item].name">Are you sure you wish to {{props.operation}}
+                <b :class="truncateText" :title="props[props.item].name">{{ props[props.item].name }}</b>?</p>
+            <p v-if="operation2 && props.item !== 'snapshots'" class="text-default row-start-1"
+                :class="truncateText" :title="props[props.item].name">Are you sure you wish to {{props.operation}}
+                {{props.operation2!}} on <b :class="truncateText" :title="props[props.item].name">{{
+                    props[props.item].name }}</b>?</p>
 
-                <p v-if="props.item == 'snapshots'" class="text-default row-start-1">Are you sure you wish to destroy
-                    these snapshots?</p>
-                <div v-if="props.item == 'snapshots' && operationRunning && bulkDestroyTotal > 0"
-                    class="mt-2 text-left text-sm text-default row-start-2">
-                    <p>
-                        Destroying {{ bulkDestroyProcessed }} of {{ bulkDestroyTotal }} snapshots
-                        <span v-if="bulkDestroyCurrent"> ({{ bulkDestroyCurrent }})</span>
-                        ...
-                    </p>
-                    <div class="mt-1 w-full bg-well h-2 rounded">
-                        <div class="h-2 bg-danger rounded" :style="{ width: progressPercent + '%' }"></div>
-                    </div>
-                </div>
-
-                <div v-if="props.item == 'snapshots'"
-                    class="text-default text-left items-center divide-y divide-default row-start-3 p-2 bg-accent overflow-y-auto max-h-96">
-                    <p v-for="snapshot, idx in props.snapshots" :key="idx" :class="[
-                        snapshot === bulkDestroyCurrent ? 'font-semibold text-danger' : '',
-                    ]">
-                        {{ snapshot }}
-                    </p>
-                </div>
-                <div v-if="props.operation == 'destroy' && props.hasChildren!">
-                    <div v-if="props.item == 'filesystem'" class="w-full">
-                        <div class="font-medium text-sm grid grid-flow-row justify-items-center justify-center">
-                            <p class="justify-self-center text-danger font-medium mt-3">WARNING!!!</p>
-                            <p class="justify-self-center text-default">This {{ props.item }} <span
-                                    class="text-danger">has children and/or snapshots.</span></p>
-                            <p
-                                class="justify-self-center grid grid-flow-row justify-center justify-items-center text-default w-full">
-                                If you wish to destroy, use either <br /><span class="text-danger">Destroy all
-                                    children/snapshots</span> or <br /><span class="text-danger">Destroy ALL
-                                    dependents.</span></p>
-                        </div>
-
-                        <div class="grid grid-rows-2">
-                            <div class="flex flex-row justify-between">
-                                <label :for="getIdKey('destroy-children')"
-                                    class="mt-2 mr-2 block text-sm font-medium text-default">Destroy all
-                                    children/snapshots</label>
-                                <Switch v-model="destroyChildrenToggle" :id="getIdKey('destroy-children')"
-                                    :class="[destroyChildrenToggle ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                                    <span class="sr-only">Use setting</span>
-                                    <span
-                                        :class="[destroyChildrenToggle ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                        <span
-                                            :class="[destroyChildrenToggle ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                            aria-hidden="true">
-                                            <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                                <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                        </span>
-                                        <span
-                                            :class="[destroyChildrenToggle ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                            aria-hidden="true">
-                                            <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                                <path
-                                                    d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                            </svg>
-                                        </span>
-                                    </span>
-                                </Switch>
-                            </div>
-
-                            <div class="flex flex-row justify-between">
-                                <label :for="getIdKey('destroy-dependents')"
-                                    class="mt-2 mr-2 block text-sm font-medium text-default">Destroy all dependents
-                                    (children + clones + snapshots)</label>
-                                <Switch v-model="destroyAllDependentsToggle" :id="getIdKey('destroy-dependents')"
-                                    :class="[destroyAllDependentsToggle ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                                    <span class="sr-only">Use setting</span>
-                                    <span
-                                        :class="[destroyAllDependentsToggle ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                        <span
-                                            :class="[destroyAllDependentsToggle ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                            aria-hidden="true">
-                                            <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                                <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                        </span>
-                                        <span
-                                            :class="[destroyAllDependentsToggle ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                            aria-hidden="true">
-                                            <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                                <path
-                                                    d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                            </svg>
-                                        </span>
-                                    </span>
-                                </Switch>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="props.item == 'snapshot'">
-                        <div
-                            class="text-danger font-medium grid grid-rows-3 row-span-3 row-start-2 justify-items-center gap-0.5">
-                            <p class="text-danger font-medium row-start-1 mt-3">WARNING!!!</p>
-                            <p class="text-danger row-start-2">This {{ props.item }} has dependent clones.</p>
-                            <p class="text-default row-start-3">If you wish to {{ props.operation }}, use <br /><span
-                                    class="text-danger">{{upperCaseWord(option2)}}</span>.</p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div v-if="props.operation == 'rollback' && props.item == 'snapshot'">
-                    <legend class="text-danger font-medium">All data that has changed since the snapshot will be
-                        discarded.</legend>
-                </div>
-
-                <div v-if="props.firstOption" class="flex flex-row justify-between mt-1">
-                    <label :for="getIdKey('option-one')"
-                        class="mt-1.5 mr-2 block text-sm font-medium text-default">{{upperCaseWord(option1)}}</label>
-                    <Switch v-model="option1Toggle" :id="getIdKey('option-one')"
-                        :class="[option1Toggle ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                        <span class="sr-only">Use setting</span>
-                        <span
-                            :class="[option1Toggle ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                            <span
-                                :class="[option1Toggle ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                aria-hidden="true">
-                                <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                    <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                            <span
-                                :class="[option1Toggle ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                aria-hidden="true">
-                                <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                    <path
-                                        d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                </svg>
-                            </span>
-                        </span>
-                    </Switch>
-                </div>
-
-                <div v-if="props.secondOption" class="flex flex-row justify-between mt-1">
-                    <label :for="getIdKey('option-two')"
-                        class="mt-1.5 mr-2 block text-sm font-medium leading-6 text-default">{{upperCaseWord(option2)}}</label>
-                    <Switch v-model="option2Toggle" :id="getIdKey('option-two')"
-                        :class="[option2Toggle! ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                        <span class="sr-only">Use setting</span>
-                        <span
-                            :class="[option2Toggle! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                            <span
-                                :class="[option2Toggle! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                aria-hidden="true">
-                                <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                    <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                            <span
-                                :class="[option2Toggle! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-                                aria-hidden="true">
-                                <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                    <path
-                                        d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                </svg>
-                            </span>
-                        </span>
-                    </Switch>
+            <p v-if="props.item == 'snapshots'" class="text-default row-start-1">Are you sure you wish to destroy
+                these snapshots?</p>
+            <div v-if="props.item == 'snapshots' && operationRunning && bulkDestroyTotal > 0"
+                class="mt-2 text-left text-sm text-default row-start-2">
+                <p>
+                    Destroying {{ bulkDestroyProcessed }} of {{ bulkDestroyTotal }} snapshots
+                    <span v-if="bulkDestroyCurrent"> ({{ bulkDestroyCurrent }})</span>
+                    ...
+                </p>
+                <div class="mt-1 w-full bg-well h-2 rounded">
+                    <div class="h-2 bg-danger rounded" :style="{ width: progressPercent + '%' }"></div>
                 </div>
             </div>
-        </template>
-        <template v-slot:footer>
+
+            <div v-if="props.item == 'snapshots'"
+                class="text-default text-left items-center divide-y divide-default row-start-3 p-2 bg-accent overflow-y-auto max-h-96">
+                <p v-for="snapshot, idx in props.snapshots" :key="idx" :class="[
+                    snapshot === bulkDestroyCurrent ? 'font-semibold text-danger' : '',
+                ]">
+                    {{ snapshot }}
+                </p>
+            </div>
+            <div v-if="props.operation == 'destroy' && props.hasChildren!">
+                <div v-if="props.item == 'filesystem'" class="w-full">
+                    <div class="font-medium text-sm grid grid-flow-row justify-items-center justify-center">
+                        <p class="justify-self-center text-danger font-medium mt-3">WARNING!!!</p>
+                        <p class="justify-self-center text-default">This {{ props.item }} <span
+                                class="text-danger">has children and/or snapshots.</span></p>
+                        <p
+                            class="justify-self-center grid grid-flow-row justify-center justify-items-center text-default w-full">
+                            If you wish to destroy, use either <br /><span class="text-danger">Destroy all
+                                children/snapshots</span> or <br /><span class="text-danger">Destroy ALL
+                                dependents.</span></p>
+                    </div>
+
+                    <div class="grid grid-rows-2">
+                        <div class="flex flex-row justify-between">
+                            <label :for="getIdKey('destroy-children')"
+                                class="mt-2 mr-2 block text-sm font-medium text-default">Destroy all
+                                children/snapshots</label>
+                            <PfSwitch
+                                :modelValue="destroyChildrenToggle"
+                                @update:modelValue="destroyChildrenToggle = $event"
+                                :id="getIdKey('destroy-children')"
+                                label=""
+                            />
+                        </div>
+
+                        <div class="flex flex-row justify-between">
+                            <label :for="getIdKey('destroy-dependents')"
+                                class="mt-2 mr-2 block text-sm font-medium text-default">Destroy all dependents
+                                (children + clones + snapshots)</label>
+                            <PfSwitch
+                                :modelValue="destroyAllDependentsToggle"
+                                @update:modelValue="destroyAllDependentsToggle = $event"
+                                :id="getIdKey('destroy-dependents')"
+                                label=""
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="props.item == 'snapshot'">
+                    <div
+                        class="text-danger font-medium grid grid-rows-3 row-span-3 row-start-2 justify-items-center gap-0.5">
+                        <p class="text-danger font-medium row-start-1 mt-3">WARNING!!!</p>
+                        <p class="text-danger row-start-2">This {{ props.item }} has dependent clones.</p>
+                        <p class="text-default row-start-3">If you wish to {{ props.operation }}, use <br /><span
+                                class="text-danger">{{upperCaseWord(option2)}}</span>.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div v-if="props.operation == 'rollback' && props.item == 'snapshot'">
+                <legend class="text-danger font-medium">All data that has changed since the snapshot will be
+                    discarded.</legend>
+            </div>
+
+            <div v-if="props.firstOption" class="flex flex-row justify-between mt-1">
+                <label :for="getIdKey('option-one')"
+                    class="mt-1.5 mr-2 block text-sm font-medium text-default">{{upperCaseWord(option1)}}</label>
+                <PfSwitch
+                    :modelValue="option1Toggle"
+                    @update:modelValue="option1Toggle = $event"
+                    :id="getIdKey('option-one')"
+                    label=""
+                />
+            </div>
+
+            <div v-if="props.secondOption" class="flex flex-row justify-between mt-1">
+                <label :for="getIdKey('option-two')"
+                    class="mt-1.5 mr-2 block text-sm font-medium leading-6 text-default">{{upperCaseWord(option2)}}</label>
+                <PfSwitch
+                    :modelValue="option2Toggle"
+                    @update:modelValue="option2Toggle = $event"
+                    :id="getIdKey('option-two')"
+                    label=""
+                />
+            </div>
+        </div>
+
+        <!-- Footer slot -->
+        <template #footer>
             <div class="w-full grid grid-rows-1">
                 <div class="button-group-row justify-between">
                     <button @click="closeModal" :id="getIdKey('confirm-no')" name="button-no"
@@ -255,13 +189,13 @@
                 </div>
             </div>
         </template>
-    </OldModal>
+    </PfModal>
 </template>
 <script setup lang="ts">
-import { Switch } from '@headlessui/vue';
-import { Ref, inject, ref, computed, watch} from 'vue';
+import { Ref, inject, ref, computed, watch } from 'vue';
 import { upperCaseWord } from '../../composables/helpers';
-import OldModal from './OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
+import PfSwitch from '../pf/PfSwitch.vue';
 import { ZFSFileSystemInfo,ZPool,VDev,VDevDisk } from '@45drives/houston-common-lib';
 import { ConfirmationCallback, Snapshot } from '../../types';
 
@@ -287,7 +221,6 @@ const props = defineProps<UniversalConfirmationProps>();
 const emit = defineEmits(['close']);
 
 const operationRunning = inject<Ref<boolean>>('modal-confirm-running')!;
-const showFlag = ref(props.showFlag);
 
 const closeModal = () => {
     option1Toggle.value = false;
