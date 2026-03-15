@@ -1,18 +1,15 @@
 <template>
-	<div>
-		<div class="w-full h-dvh min-h-dvh overflow-visible bg-default text-default">
+	<div class="bg-default text-default">
+		<div v-if="props.tag === 'dashboard'" class="p-2">
+			<component :is="dashboardComponent"/>
+		</div>
 
-			<div v-if="props.tag === 'dashboard'" class="p-2">
-			   	<component :is="dashboardComponent"/> 
-			</div>
+		<div v-if="props.tag === 'pools'" class="p-2">
+			<component :is="poolListComponent"/>
+		</div>
 
-			<div v-if="props.tag === 'pools'" class="p-2">
-				<component :is="poolListComponent"/>
-			</div>
-
-			<div v-if="props.tag === 'filesystems'" class="p-2">
-				<component :is="fileSystemListComponent"/>
-			</div>
+		<div v-if="props.tag === 'filesystems'" class="p-2">
+			<component :is="fileSystemListComponent"/>
 		</div>
 	</div>
 </template>
