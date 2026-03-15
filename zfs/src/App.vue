@@ -1,6 +1,6 @@
 <template>
 	<div class="pf-v5-c-page">
-		<header class="px-3 sm:px-5 flex items-center bg-plugin-header font-redhat font-normal shadow-lg z-10">
+		<header class="pf-v5-c-masthead px-3 sm:px-5 flex items-center bg-plugin-header font-redhat font-normal shadow-lg z-10">
 			<div class="flex flex-row flex-wrap items-baseline basis-32 grow shrink-0 gap-x-4 content-between">
 				<div class="flex flex-row items-center my-5">
 					<Logo45Drives class="h-6" />
@@ -14,9 +14,11 @@
 				<NotificationBell />
 			</div>
 		</header>
-		<main class="pf-v5-c-page__main">
-			<section class="pf-v5-c-page__main-section">
+		<main class="pf-v5-c-page__main" tabindex="-1">
+			<section class="pf-v5-c-page__main-section pf-m-no-padding">
 				<Navigation :navigationItems="navigation" :currentNavigationItem="currentNavigationItem" :navigationCallback="navigationCallback" :show="show"/>
+			</section>
+			<section class="pf-v5-c-page__main-section">
 				<ZFS :tag="navTag"/>
 			</section>
 		</main>
