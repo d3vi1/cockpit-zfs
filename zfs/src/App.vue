@@ -1,19 +1,35 @@
 <template>
-	<div class="min-h-screen h-full w-full min-w-fit flex flex-col bg-default overflow-auto">
-		<HoustonAppContainer moduleName="ZFS" :appVersion="version" :notificationComponent="NotificationBell" >
-		<Navigation :navigationItems="navigation" :currentNavigationItem="currentNavigationItem" :navigationCallback="navigationCallback" :show="show"/>
-			<ZFS :tag="navTag"/>
-			
-		</HoustonAppContainer>
+	<div class="pf-v5-c-page">
+		<header class="pf-v5-c-masthead px-3 sm:px-5 flex items-center bg-plugin-header font-redhat font-normal shadow-lg z-10">
+			<div class="flex flex-row flex-wrap items-baseline basis-32 grow shrink-0 gap-x-4 content-between">
+				<div class="flex flex-row items-center my-5">
+					<Logo45Drives class="h-6" />
+				</div>
+			</div>
+			<h1 class="text-red-800 dark:text-white text-base sm:text-2xl grow-0 text-center px-2">
+				ZFS
+			</h1>
+			<div class="flex basis-32 justify-end items-center grow shrink-0 gap-buttons">
+				<div class="grow"></div>
+				<NotificationBell />
+			</div>
+		</header>
+		<main class="pf-v5-c-page__main" tabindex="-1">
+			<section class="pf-v5-c-page__main-section pf-m-no-padding">
+				<Navigation :navigationItems="navigation" :currentNavigationItem="currentNavigationItem" :navigationCallback="navigationCallback" :show="show"/>
+			</section>
+			<section class="pf-v5-c-page__main-section">
+				<ZFS :tag="navTag"/>
+			</section>
+		</main>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted } from 'vue';
-// import "@45drives/houston-common-ui/style.css";
 import "@45drives/houston-common-ui/style.css";
 import '@45drives/houston-common-css/src/index.css';
-import { HoustonAppContainer } from "@45drives/houston-common-ui";
+import { Logo45Drives } from "@45drives/houston-common-ui";
 import Navigation from "./components/common/Navigation.vue";
 import ZFS from './views/ZFS.vue';
 import { NavigationItem, NavigationCallback } from './types';
@@ -22,7 +38,6 @@ import NotificationBell from './components/notification/Notification.vue';
 
 const show = ref(true);
 const navTag = ref('dashboard');
-const version = __APP_VERSION__;
 
 
 const currentNavigationItem = computed<NavigationItem | undefined>(() => navigation.find(item => item.current));
