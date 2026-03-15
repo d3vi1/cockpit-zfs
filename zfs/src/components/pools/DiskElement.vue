@@ -23,12 +23,14 @@
 		</td>
 	</tr>
 	<!-- Child disks for REPLACING/MISSING state -->
-	<tr v-if="diskState == 'REPLACING' || diskState == 'MISSING'" v-for="disk in props.disk.children!"
-		:key="disk.name" class="pf-v5-c-table__tr border border-collapse border-default bg-accent text-default text-center">
-		<td class="pf-v5-c-table__td py-1" :class="truncateText" :title="disk.name" colspan="3">{{ props.disk.name }}</td>
-		<td class="pf-v5-c-table__td py-1" colspan="2"></td>
-		<td class="pf-v5-c-table__td py-1" colspan="2"></td>
-	</tr>
+	<template v-if="diskState == 'REPLACING' || diskState == 'MISSING'">
+		<tr v-for="disk in props.disk.children!" :key="disk.name"
+			class="pf-v5-c-table__tr border border-collapse border-default bg-accent text-default text-center">
+			<td class="pf-v5-c-table__td py-1" :class="truncateText" :title="disk.name" colspan="3">{{ props.disk.name }}</td>
+			<td class="pf-v5-c-table__td py-1" colspan="2"></td>
+			<td class="pf-v5-c-table__td py-1" colspan="2"></td>
+		</tr>
+	</template>
 
 	<div v-if="showDetachDiskModal">
 		<component :is="detachDiskComponent" :showFlag="showDetachDiskModal" @close="updateShowDetachDisk"

@@ -5,155 +5,158 @@
 			<Navigation :navigationItems="navigation" :currentNavigationItem="currentNavigationItem"
 				:navigationCallback="navigationCallback" :show="show" />
 		</div>
-			<div v-if="navTag == 'stats'">
-				<div class="mt-6 grid grid-cols-3 grid-rows-2 text-default">
-					<PoolCapacity :id="getIdKey('pool-visual-capacity')" :fillColor="capacityColor"
-						:name="props.pool.name" :totalSize="props.pool.properties.size"
-						:percentage="props.pool.properties.capacity" :radius="50" :coordX="60" :coordY="60"
-						:strokeWidth="10" :percentFontSize="'text-2xl'" class="w-full col-span-3 grow" />
-					<div
-						class="mt-2 px-8 col-span-3 row-start-2 grid grid-cols-3 justify-items-center min-w-fit max-w-fit">
-						<div class="m-2 col-span-1">
-							<p :id="getIdKey('pool-health')" name="pool-health" class="text-lg">Health: <span
-									:class="formatStatus(props.pool.status)" class="">{{ props.pool.status }}</span></p>
-							<p :id="getIdKey('pool-errors')" name="pool-errors" class="text-sm">Errors: <span
-									:class="formatStatus(props.pool.status)" class="">{{ props.pool.errorCount }}</span>
-								<br />as of {{ getTimestampString() }}
-							</p>
-							<p :id="getIdKey('pool-refreservation')" name="pool-refreservation" class="text-sm">
-								Refreservation: {{
-								convertBytesToSize(props.pool.properties.refreservationRawSize!) }} ({{
-								convertBytesToSize(props.pool.properties.refreservationRawSize!) }} ({{
-								props.pool.properties.refreservationPercent }}%)</p>
-						</div>
-						<div class="m-2 col-span-1">
-							<p :id="getIdKey('pool-altroot')" name="pool-altroot" class="text-base"
-								:title="props.pool.properties.altroot == '' || props.pool.properties.altroot == '-' ? 'None' : props.pool.properties.altroot"
-								:class="truncateText">Alt Root: {{ props.pool.properties.altroot == '' ||
-								props.pool.properties.altroot == '-' ? 'None' : props.pool.properties.altroot }}</p>
-							<p :id="getIdKey('pool-devices')" name="pool-devices" class="text-base">Devices: {{
-								getNumDevices }}</p>
-							<p :id="getIdKey('pool-disks')" name="pool-disks" class="text-base">Disks: {{ getNumDisks }}
-							</p>
-						</div>
-						<div class="m-2 col-span-1">
-							<p :id="getIdKey('pool-allocated')" name="pool-allocated" class="text-base">Used: {{
-								props.pool.properties.allocated }}</p>
-							<p :id="getIdKey('pool-free')" name="pool-free" class="text-base">RAW Space Available: {{
-								props.pool.properties.free }}</p>
-							<p :id="getIdKey('pool-free')" name="pool-free" class="text-base">Actual Space Available: {{
-								props.pool.properties.available }}</p>
-							<p :id="getIdKey('pool-size')" name="pool-size" class="text-base">Total: {{
-								props.pool.properties.size }}</p>
-						</div>
+		<div v-if="navTag == 'stats'">
+			<div class="mt-6 grid grid-cols-3 grid-rows-2 text-default">
+				<PoolCapacity :id="getIdKey('pool-visual-capacity')" :fillColor="capacityColor"
+					:name="props.pool.name" :totalSize="props.pool.properties.size"
+					:percentage="props.pool.properties.capacity" :radius="50" :coordX="60" :coordY="60"
+					:strokeWidth="10" :percentFontSize="'text-2xl'" class="w-full col-span-3 grow" />
+				<div
+					class="mt-2 px-8 col-span-3 row-start-2 grid grid-cols-3 justify-items-center min-w-fit max-w-fit">
+					<div class="m-2 col-span-1">
+						<p :id="getIdKey('pool-health')" name="pool-health" class="text-lg">Health: <span
+								:class="formatStatus(props.pool.status)" class="">{{ props.pool.status }}</span></p>
+						<p :id="getIdKey('pool-errors')" name="pool-errors" class="text-sm">Errors: <span
+								:class="formatStatus(props.pool.status)" class="">{{ props.pool.errorCount }}</span>
+							<br />as of {{ getTimestampString() }}
+						</p>
+						<p :id="getIdKey('pool-refreservation')" name="pool-refreservation" class="text-sm">
+							Refreservation: {{
+							convertBytesToSize(props.pool.properties.refreservationRawSize!) }} ({{
+							convertBytesToSize(props.pool.properties.refreservationRawSize!) }} ({{
+							props.pool.properties.refreservationPercent }}%)</p>
+					</div>
+					<div class="m-2 col-span-1">
+						<p :id="getIdKey('pool-altroot')" name="pool-altroot" class="text-base"
+							:title="props.pool.properties.altroot == '' || props.pool.properties.altroot == '-' ? 'None' : props.pool.properties.altroot"
+							:class="truncateText">Alt Root: {{ props.pool.properties.altroot == '' ||
+							props.pool.properties.altroot == '-' ? 'None' : props.pool.properties.altroot }}</p>
+						<p :id="getIdKey('pool-devices')" name="pool-devices" class="text-base">Devices: {{
+							getNumDevices }}</p>
+						<p :id="getIdKey('pool-disks')" name="pool-disks" class="text-base">Disks: {{ getNumDisks }}
+						</p>
+					</div>
+					<div class="m-2 col-span-1">
+						<p :id="getIdKey('pool-allocated')" name="pool-allocated" class="text-base">Used: {{
+							props.pool.properties.allocated }}</p>
+						<p :id="getIdKey('pool-free')" name="pool-free" class="text-base">RAW Space Available: {{
+							props.pool.properties.free }}</p>
+						<p :id="getIdKey('pool-free')" name="pool-free" class="text-base">Actual Space Available: {{
+							props.pool.properties.available }}</p>
+						<p :id="getIdKey('pool-size')" name="pool-size" class="text-base">Total: {{
+							props.pool.properties.size }}</p>
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div v-if="navTag == 'topology'" class="mt-2 grid" :class="`grid-cols-${props.pool.vdevs.length}`">
-				<div v-for="vDev, vDevIdx in props.pool.vdevs" :key="vDevIdx"
-					class="p-2 m-2 rounded-md border border-default bg-accent">
-					<legend class="mb-1 text-base font-medium leading-6 text-default">{{ vDev.name }} ({{ vDev.type }})
-					</legend>
+		<div v-if="navTag == 'topology'" class="mt-2 grid" :class="`grid-cols-${props.pool.vdevs.length}`">
+			<div v-for="vDev, vDevIdx in props.pool.vdevs" :key="vDevIdx"
+				class="p-2 m-2 rounded-md border border-default bg-accent">
+				<legend class="mb-1 text-base font-medium leading-6 text-default">{{ vDev.name }} ({{ vDev.type }})
+				</legend>
 
-					<div class="grid" :class="vDev.disks.length < 2 ? 'grid-cols-1' : 'grid-cols-2'">
-						<div v-for="disk, diskIdx in vDev.disks" :key="diskIdx" class="m-1">
-							<PoolDetailDiskCard :disk="vDev.disks[diskIdx]" />
-						</div>
+				<div class="grid" :class="vDev.disks.length < 2 ? 'grid-cols-1' : 'grid-cols-2'">
+					<div v-for="disk, diskIdx in vDev.disks" :key="diskIdx" class="m-1">
+						<PoolDetailDiskCard :disk="vDev.disks[diskIdx]" />
 					</div>
 				</div>
 			</div>
+		</div>
 
+		<div v-if="navTag == 'snapshots'" class="w-full text-center min-w-fit">
+			<component :is="snapshotListComponent" :pool="props.pool" :item="'pool'" />
+		</div>
 
-			<div v-if="navTag == 'snapshots'" class="w-full text-center min-w-fit">
-				<component :is="snapshotListComponent" :pool="props.pool" :item="'pool'" />
-			</div>
-
-			<div v-if="navTag == 'settings'">
-				<div class="grid grid-cols-4 gap-2">
-					<div class="mt-2 col-span-1 col-start-1 row-start-1">
-						<p :id="getIdKey('settings-pool-name')" name="settings-pool-name"
-							class="text-base text-default">Pool</p>
-						<p class="mt-1 py-1.5" :class="truncateText" :title="poolConfig.name">{{ poolConfig.name }}</p>
-					</div>
-					<div class="mt-2 col-span-1 col-start-2 row-start-1">
-						<p :id="getIdKey('settings-pool-readonly')" name="settings-pool-readonly"
-							class="text-base text-default">Read Only</p>
-						<p class="mt-1 py-1.5">{{ upperCaseWord(isBoolOnOff(poolConfig.properties.readOnly)) }}</p>
-					</div>
-					<div class="mt-2 col-span-1 col-start-3 row-start-1">
-						<p :id="getIdKey('settings-pool-guid')" name="settings-pool-guid"
-							class="text-base text-default">GUID</p>
-						<p class="mt-1 py-1.5">{{ poolConfig.guid }}</p>
-					</div>
-
-					<div class="mt-2 col-span-1 col-start-4 row-start-1">
-						<label :for="getIdKey('settings-pool-sector-size')"
-							class="bg-default block text-base leading-6 text-default">Sector Size</label>
-						<p :id="getIdKey('settings-pool-sector-size')" name="settings-pool-sector-size"
-							class="mt-1 py-1.5">{{ calculateSectorSize(Number(poolConfig.properties.sector)) }}</p>
-					</div>
-
-					<div class="mt-2 col-span-1 col-start-1 row-start-2">
-						<label :for="getIdKey('settings-pool-fail-mode')"
-							class="bg-default block text-base leading-6 text-default">Fail Mode</label>
-						<select :id="getIdKey('settings-pool-fail-mode')" v-model="poolConfig.failMode"
-							:disabled="settingsLocked"
-							:title="settingsLocked ? 'Requires administrative privileges' : ''" name="pool-fail-mode"
-							class="mt-1 block w-full rounded-md border-0 py-1.5 text-default bg-default ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-slate-600 sm:text-sm sm:leading-6">
-							<option value="wait">Wait</option>
-							<option value="continue">Continue</option>
-							<option value="panic">Panic</option>
-						</select>
-					</div>
-
-
-					<div class="mt-2 col-span-3 col-start-2 row-start-2">
-						<p :for="getIdKey('settings-pool-comment')" class="text-base text-default">Comment</p>
-						<input :id="getIdKey('settings-pool-comment')" v-model="poolConfig.comment"
-							name="setting-pool-comment" placeholder="Enter a comment here" type="text"
-							class="input-textlike mt-1 block w-full rounded-md border-0 py-1.5 px-1.5 text-default shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-muted focus:ring-2 focus:ring-inset focus:ring-slate-300 sm:text-sm sm:leading-6" />
-					</div>
-
-					<!-- auto-expand -->
-					<div class="col-span-1 col-start-1 row-start-3">
-						<PfSwitch v-model="poolConfig.properties.autoExpand"
-							:id="getIdKey('settings-pool-auto-expand')"
-							label="Auto-Expand Pool" />
-					</div>
-
-					<!-- auto-replace -->
-					<div class="col-span-1 col-start-2 row-start-3">
-						<PfSwitch v-model="poolConfig.properties.autoReplace"
-							:id="getIdKey('settings-pool-auto-replace')"
-							label="Auto-Replace Drives" />
-					</div>
-
-					<!-- display snapshots in filesystem list -->
-					<div class="col-span-2 col-start-3 row-start-3">
-						<PfSwitch v-model="poolConfig.properties.listSnapshots"
-							:id="getIdKey('settings-pool-display-snapshots')"
-							label="List Snapshots With File Systems" />
-					</div>
-
-					<!-- delegation (Allow non-privileged user access based on the dataset permissions)-->
-					<div class="col-span-2 col-start-1 row-start-4">
-						<PfSwitch v-model="poolConfig.properties.delegation"
-							:id="getIdKey('settings-pool-delegation')"
-							label="Delegation" />
-						<p class="text-xs text-muted mt-0.5">(Access based on dataset permissions)</p>
-					</div>
-
-					<!-- auto-trim -->
-					<div v-if="props.pool.diskType == 'SSD' || props.pool.diskType == 'Hybrid'"
-						class="col-span-1 col-start-3 row-start-4">
-						<PfSwitch v-model="poolConfig.properties.autoTrim"
-							:id="getIdKey('settings-pool-auto-trim')"
-							label="Auto-TRIM Pool" />
-					</div>
-
+		<div v-if="navTag == 'settings'">
+			<div class="grid grid-cols-4 gap-2">
+				<div class="mt-2 col-span-1 col-start-1 row-start-1">
+					<p :id="getIdKey('settings-pool-name')" name="settings-pool-name"
+						class="text-base text-default">Pool</p>
+					<p class="mt-1 py-1.5" :class="truncateText" :title="poolConfig.name">{{ poolConfig.name }}</p>
 				</div>
+				<div class="mt-2 col-span-1 col-start-2 row-start-1">
+					<p :id="getIdKey('settings-pool-readonly')" name="settings-pool-readonly"
+						class="text-base text-default">Read Only</p>
+					<p class="mt-1 py-1.5">{{ upperCaseWord(isBoolOnOff(poolConfig.properties.readOnly)) }}</p>
+				</div>
+				<div class="mt-2 col-span-1 col-start-3 row-start-1">
+					<p :id="getIdKey('settings-pool-guid')" name="settings-pool-guid"
+						class="text-base text-default">GUID</p>
+					<p class="mt-1 py-1.5">{{ poolConfig.guid }}</p>
+				</div>
+
+				<div class="mt-2 col-span-1 col-start-4 row-start-1">
+					<label :for="getIdKey('settings-pool-sector-size')"
+						class="bg-default block text-base leading-6 text-default">Sector Size</label>
+					<p :id="getIdKey('settings-pool-sector-size')" name="settings-pool-sector-size"
+						class="mt-1 py-1.5">{{ calculateSectorSize(Number(poolConfig.properties.sector)) }}</p>
+				</div>
+
+				<div class="mt-2 col-span-1 col-start-1 row-start-2">
+					<label :for="getIdKey('settings-pool-fail-mode')"
+						class="bg-default block text-base leading-6 text-default">Fail Mode</label>
+					<select :id="getIdKey('settings-pool-fail-mode')" v-model="poolConfig.failMode"
+						:disabled="settingsLocked"
+						:title="settingsLocked ? 'Requires administrative privileges' : ''" name="pool-fail-mode"
+						class="mt-1 block w-full rounded-md border-0 py-1.5 text-default bg-default ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-slate-600 sm:text-sm sm:leading-6">
+						<option value="wait">Wait</option>
+						<option value="continue">Continue</option>
+						<option value="panic">Panic</option>
+					</select>
+				</div>
+
+				<div class="mt-2 col-span-3 col-start-2 row-start-2">
+					<p :for="getIdKey('settings-pool-comment')" class="text-base text-default">Comment</p>
+					<input :id="getIdKey('settings-pool-comment')" v-model="poolConfig.comment"
+						name="setting-pool-comment" placeholder="Enter a comment here" type="text"
+						class="input-textlike mt-1 block w-full rounded-md border-0 py-1.5 px-1.5 text-default shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-muted focus:ring-2 focus:ring-inset focus:ring-slate-300 sm:text-sm sm:leading-6" />
+				</div>
+
+				<!-- auto-expand -->
+				<div class="col-span-1 col-start-1 row-start-3">
+					<PfSwitch v-model="poolConfig.properties.autoExpand"
+						:id="getIdKey('settings-pool-auto-expand')"
+						:disabled="settingsLocked"
+						label="Auto-Expand Pool" />
+				</div>
+
+				<!-- auto-replace -->
+				<div class="col-span-1 col-start-2 row-start-3">
+					<PfSwitch v-model="poolConfig.properties.autoReplace"
+						:id="getIdKey('settings-pool-auto-replace')"
+						:disabled="settingsLocked"
+						label="Auto-Replace Drives" />
+				</div>
+
+				<!-- display snapshots in filesystem list -->
+				<div class="col-span-2 col-start-3 row-start-3">
+					<PfSwitch v-model="poolConfig.properties.listSnapshots"
+						:id="getIdKey('settings-pool-display-snapshots')"
+						:disabled="settingsLocked"
+						label="List Snapshots With File Systems" />
+				</div>
+
+				<!-- delegation (Allow non-privileged user access based on the dataset permissions)-->
+				<div class="col-span-2 col-start-1 row-start-4">
+					<PfSwitch v-model="poolConfig.properties.delegation"
+						:id="getIdKey('settings-pool-delegation')"
+						:disabled="settingsLocked"
+						label="Delegation" />
+					<p class="text-xs text-muted mt-0.5">(Access based on dataset permissions)</p>
+				</div>
+
+				<!-- auto-trim -->
+				<div v-if="props.pool.diskType == 'SSD' || props.pool.diskType == 'Hybrid'"
+					class="col-span-1 col-start-3 row-start-4">
+					<PfSwitch v-model="poolConfig.properties.autoTrim"
+						:id="getIdKey('settings-pool-auto-trim')"
+						:disabled="settingsLocked"
+						label="Auto-TRIM Pool" />
+				</div>
+
 			</div>
+		</div>
 		<template #footer>
 			<div class="button-group-row w-full justify-between">
 				<div class="mt-2 justify-self-start">

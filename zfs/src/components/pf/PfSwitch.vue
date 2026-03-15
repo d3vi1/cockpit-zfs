@@ -1,12 +1,14 @@
 <template>
-  <label class="pf-v5-c-switch" :for="switchId">
+  <label class="pf-v5-c-switch" :class="{ 'pf-m-disabled': disabled }" :for="switchId">
     <input
       :id="switchId"
       class="pf-v5-c-switch__input"
       type="checkbox"
       role="switch"
       :aria-checked="modelValue"
+      :aria-disabled="disabled"
       :checked="modelValue"
+      :disabled="disabled"
       @change="onToggle"
     />
     <span class="pf-v5-c-switch__toggle">
@@ -33,11 +35,13 @@ interface PfSwitchProps {
   modelValue: boolean;
   label?: string;
   id?: string;
+  disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<PfSwitchProps>(), {
   label: '',
   id: '',
+  disabled: false,
 });
 
 const emit = defineEmits<{
@@ -47,6 +51,8 @@ const emit = defineEmits<{
 const switchId = props.id || `pf-switch-${++_switchUid}`;
 
 function onToggle() {
-  emit('update:modelValue', !props.modelValue);
+  if (!props.disabled) {
+    emit('update:modelValue', !props.modelValue);
+  }
 }
 </script>
