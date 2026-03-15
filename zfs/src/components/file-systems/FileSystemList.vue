@@ -151,6 +151,7 @@
 									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
 									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
 									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
 									<td class="pf-v5-c-table__td text-white text-center" role="cell">
 										<LockOpenIcon v-if="dataset.properties.encryption.value !== 'off' && dataset.properties.keystatus.value == 'available'"
 											class="w-5 inline-block" title="Encrypted &amp; Unlocked" aria-hidden="true" />
