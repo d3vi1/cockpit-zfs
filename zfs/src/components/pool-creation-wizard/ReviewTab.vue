@@ -16,7 +16,7 @@
 							<p>Sector Size: <b>{{ getValue('sector', poolConfig.sectorsize!.toString()) }}</b></p>
 							<p>Record Size: <b>{{ getValue('record', poolConfig.recordsize!.toString()) }}</b></p>
 							<div class="rounded-lg mt-1 border border-default bg-default">
-								<button type="button" class="bg-default grid grid-cols-8 w-full justify-start text-center rounded-lg" @click="advancedSettingsOpen = !advancedSettingsOpen">
+								<button type="button" aria-label="Toggle advanced settings" :aria-expanded="advancedSettingsOpen" class="bg-default grid grid-cols-8 w-full justify-start text-center rounded-lg" @click="advancedSettingsOpen = !advancedSettingsOpen">
 									<div class="m-1 col-span-1">
 										<ChevronUpIcon
 											class="h-7 w-7 text-default transition-all duration-200 transform" :class="{ 'rotate-90': !advancedSettingsOpen, 'rotate-180': advancedSettingsOpen, }"
@@ -40,7 +40,7 @@
 					</template>
 					<template v-slot:footer>
 						<div class="bg-default rounded-lg mt-1 border border-default">
-							<button type="button" class="bg-default grid grid-cols-8 w-full justify-start text-center rounded-lg" @click="vdevsOpen = !vdevsOpen">
+							<button type="button" aria-label="Toggle virtual devices" :aria-expanded="vdevsOpen" class="bg-default grid grid-cols-8 w-full justify-start text-center rounded-lg" @click="vdevsOpen = !vdevsOpen">
 								<div class="m-1 col-span-1">
 									<ChevronUpIcon
 										class="h-7 w-7 text-default transition-all duration-200 transform" :class="{ 'rotate-90': !vdevsOpen, 'rotate-180': vdevsOpen, }"
@@ -92,7 +92,7 @@
 							<p>Read Only: <b>{{ upperCaseWord(isBoolOnOff(fileSystemData.properties.isReadOnly!)) }}</b></p>	
 							<p v-if="fileSystemData.encrypted">Encryption: <b>{{ fileSystemData.properties.encryption.toUpperCase() }}</b></p>
 							<p class="mt-1 border rounded-lg border-default bg-default">
-								<button type="button" class="bg-default grid grid-cols-8 w-full justify-start text-center rounded-lg" @click="fsSettingsOpen = !fsSettingsOpen">
+								<button type="button" aria-label="Toggle filesystem settings" :aria-expanded="fsSettingsOpen" class="bg-default grid grid-cols-8 w-full justify-start text-center rounded-lg" @click="fsSettingsOpen = !fsSettingsOpen">
 									<div class="m-1 col-span-1">
 										<ChevronUpIcon
 											class="h-7 w-7 text-default transition-all duration-200 transform" :class="{ 'rotate-90': !fsSettingsOpen, 'rotate-180': fsSettingsOpen, }"

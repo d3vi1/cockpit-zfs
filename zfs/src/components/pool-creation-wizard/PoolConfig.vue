@@ -167,7 +167,7 @@
 
 			<!-- Advanced Settings (hidden for better UI/UX) -->
 			<div class="bg-well rounded-md">
-				<button type="button" class="bg-well mt-2 w-full justify-start text-center rounded-md flex flex-row" @click="advancedOpen = !advancedOpen">
+				<button type="button" aria-label="Toggle advanced settings" :aria-expanded="advancedOpen" class="bg-well mt-2 w-full justify-start text-center rounded-md flex flex-row" @click="advancedOpen = !advancedOpen">
 					<div class="m-1">
 						<ChevronUpIcon class="h-7 w-7 text-default transition-all duration-200 transform"
 							:class="{ 'rotate-90': !advancedOpen, 'rotate-180': advancedOpen, }" />

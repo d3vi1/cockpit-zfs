@@ -440,6 +440,7 @@ const notificationWrapperRef = ref<HTMLElement | null>(null);
 
 /* ---- Click-outside to close the notification panel ---- */
 function onDocumentClick(event: MouseEvent) {
+  if (emailSetUpModal.value) return;
   if (!notificationWrapperRef.value) return;
   if (!notificationWrapperRef.value.contains(event.target as Node)) {
     menuOpen.value = false;
