@@ -167,65 +167,63 @@
 
 			<!-- Advanced Settings (hidden for better UI/UX) -->
 			<div class="bg-well rounded-md">
-				<Disclosure v-slot="{ open }">
-					<DisclosureButton class="bg-well mt-2 w-full justify-start text-center rounded-md flex flex-row">
-						<div class="m-1">
-							<ChevronUpIcon class="h-7 w-7 text-default transition-all duration-200 transform"
-								:class="{ 'rotate-90': !open, 'rotate-180': open, }" />
+				<button type="button" aria-label="Toggle advanced settings" :aria-expanded="advancedOpen" class="bg-well mt-2 w-full justify-start text-center rounded-md flex flex-row" @click="advancedOpen = !advancedOpen">
+					<div class="m-1">
+						<ChevronUpIcon class="h-7 w-7 text-default transition-all duration-200 transform"
+							:class="{ 'rotate-90': !advancedOpen, 'rotate-180': advancedOpen, }" />
+					</div>
+					<div class="ml-3 mt-1.5">
+						<span class="text-start whitespace-nowrap text-base text-default"><b><u>Advanced
+									Settings</u></b></span>
+					</div>
+				</button>
+				<div v-if="advancedOpen">
+					<div class="bg-well rounded-md p-2">
+						<!-- Deduplication (Toggle) -->
+						<div class="ml-3 w-full">
+							<PfSwitch :id="getIdKey('deduplication-enabled')" :modelValue="poolConfig.dedup === 'on'"
+								@update:modelValue="poolConfig.dedup = $event ? 'on' : 'off'" label="Deduplication" />
 						</div>
-						<div class="ml-3 mt-1.5">
-							<span class="text-start whitespace-nowrap text-base text-default"><b><u>Advanced
-										Settings</u></b></span>
-						</div>
-					</DisclosureButton>
-					<DisclosurePanel>
-						<div class="bg-well rounded-md p-2">
-							<!-- Deduplication (Toggle) -->
-							<div class="ml-3 w-full">
-								<PfSwitch :id="getIdKey('deduplication-enabled')" :modelValue="poolConfig.dedup === 'on'"
-									@update:modelValue="poolConfig.dedup = $event ? 'on' : 'off'" label="Deduplication" />
-							</div>
 
-							<!-- Refreservation (Slider) -->
-							<div class="ml-3 w-full">
-								<label :for="getIdKey('steps-range')"
-									class="mt-1 block text-sm font-medium text-default">Refreservation</label>
-								<div class="flex flex-row">
-									<input :id="getIdKey('steps-range')" v-model="poolConfig.refreservationPercent"
-										type="range" min="0" max="20" step="1"
-										class="text-default mt-5 w-3/4 h-2 bg-accent rounded-lg appearance-none cursor-pointer ">
-									<input :id="getIdKey('steps-range')" v-model="poolConfig.refreservationPercent"
-										type="number" min="0" max="20"
-										class="text-default bg-default mt-1 w-fit block py-1.5 px-1.5 ml-2 text-default placeholder:text-muted input-textlike sm:text-sm sm:leading-6" />
-									<p class="mt-3 pl-1">%</p>
-								</div>
-							</div>
-
-							<!-- Auto-Expand Pool (Toggle) -->
-							<div class="ml-3 w-full">
-								<PfSwitch :id="getIdKey('auto-expand-enabled')"
-									:modelValue="poolConfig.autoexpand === 'on'"
-									@update:modelValue="poolConfig.autoexpand = $event ? 'on' : 'off'"
-									label="Auto-Expand Pool (When Larger Devices are Added)" />
-							</div>
-
-							<!-- Auto-Replace Devices (Toggle) -->
-							<div class="ml-3 w-full">
-								<PfSwitch :id="getIdKey('auto-replace-enabled')"
-									:modelValue="poolConfig.autoreplace === 'on'"
-									@update:modelValue="poolConfig.autoreplace = $event ? 'on' : 'off'"
-									label="Auto-Replace Devices" />
-							</div>
-
-							<!-- Auto-TRIM (Toggle) -->
-							<div class="ml-3 w-full">
-								<PfSwitch :id="getIdKey('auto-trim-enabled')" :modelValue="poolConfig.autotrim === 'on'"
-									@update:modelValue="poolConfig.autotrim = $event ? 'on' : 'off'"
-									label="Automatic TRIM" />
+						<!-- Refreservation (Slider) -->
+						<div class="ml-3 w-full">
+							<label :for="getIdKey('steps-range')"
+								class="mt-1 block text-sm font-medium text-default">Refreservation</label>
+							<div class="flex flex-row">
+								<input :id="getIdKey('steps-range')" v-model="poolConfig.refreservationPercent"
+									type="range" min="0" max="20" step="1"
+									class="text-default mt-5 w-3/4 h-2 bg-accent rounded-lg appearance-none cursor-pointer ">
+								<input :id="getIdKey('steps-range')" v-model="poolConfig.refreservationPercent"
+									type="number" min="0" max="20"
+									class="text-default bg-default mt-1 w-fit block py-1.5 px-1.5 ml-2 text-default placeholder:text-muted input-textlike sm:text-sm sm:leading-6" />
+								<p class="mt-3 pl-1">%</p>
 							</div>
 						</div>
-					</DisclosurePanel>
-				</Disclosure>
+
+						<!-- Auto-Expand Pool (Toggle) -->
+						<div class="ml-3 w-full">
+							<PfSwitch :id="getIdKey('auto-expand-enabled')"
+								:modelValue="poolConfig.autoexpand === 'on'"
+								@update:modelValue="poolConfig.autoexpand = $event ? 'on' : 'off'"
+								label="Auto-Expand Pool (When Larger Devices are Added)" />
+						</div>
+
+						<!-- Auto-Replace Devices (Toggle) -->
+						<div class="ml-3 w-full">
+							<PfSwitch :id="getIdKey('auto-replace-enabled')"
+								:modelValue="poolConfig.autoreplace === 'on'"
+								@update:modelValue="poolConfig.autoreplace = $event ? 'on' : 'off'"
+								label="Auto-Replace Devices" />
+						</div>
+
+						<!-- Auto-TRIM (Toggle) -->
+						<div class="ml-3 w-full">
+							<PfSwitch :id="getIdKey('auto-trim-enabled')" :modelValue="poolConfig.autotrim === 'on'"
+								@update:modelValue="poolConfig.autotrim = $event ? 'on' : 'off'"
+								label="Automatic TRIM" />
+						</div>
+					</div>
+				</div>
 			</div>
 
 
@@ -270,7 +268,6 @@
 <script setup lang="ts">
 import { inject, ref, Ref, computed, watchEffect, onMounted, watch } from 'vue';
 import { ChevronUpIcon, ExclamationCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
 import PfSwitch from '../pf/PfSwitch.vue';
 import { isBoolOnOff, convertSizeToBytes, upperCaseWord, isBoolCompression, getDiskIDName, truncateName, getFullDiskInfo } from '../../composables/helpers';
 import { loadImportablePools } from '../../composables/loadImportables';
@@ -290,6 +287,8 @@ const poolConfig = inject<Ref<ZPoolBase & ZpoolCreateOptions>>('pool-config-data
 const disks = inject<Ref<VDevDisk[]>>('disks')!;
 const allPools = inject<Ref<ZPool[]>>('pools')!;
 const fileSystemConfig = inject<Ref<ZFSFileSystemInfo>>('file-system-data')!;
+
+const advancedOpen = ref(false);
 
 const nameFeedback = inject<Ref<string>>('feedback-name')!;
 const vDevFeedback = inject<Ref<string>>('feedback-vdev')!;

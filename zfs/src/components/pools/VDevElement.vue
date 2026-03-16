@@ -4,7 +4,7 @@
 		<div class="flex w-full text-center bg-primary text-sm text-white items-center" style="cursor: pointer;" @click="isExpanded = !isExpanded">
 			<div class="p-1 flex-none" style="width:3rem;">
 				<button class="pf-v5-c-button pf-m-plain text-white" @click.stop="isExpanded = !isExpanded"
-					:aria-expanded="isExpanded">
+					:aria-expanded="isExpanded" aria-label="Toggle vdev details">
 					<svg :style="{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"
 						viewBox="0 0 256 512" fill="currentColor" aria-hidden="true" style="width:1em;height:1em;">
 						<path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/>

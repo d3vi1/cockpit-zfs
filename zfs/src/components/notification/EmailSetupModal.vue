@@ -1,12 +1,5 @@
-<template>		
-    <OldModal :isOpen="emailSetUpModal" @close="closeModal()" :marginTop="'mt-28'" :width="'w-3/5'" :minWidth="'min-w-3/5'" :closeOnBackgroundClick="false">
-        <!-- <OldModal @close="closeModal" :isOpen="showAddVDevModal" :marginTop="props.marginTop" :width="'w-3/5'"
-        :minWidth="'min-w-3/5'" :closeOnBackgroundClick="false"> -->
-            <template v-slot:title >
-                Email Notification Settings
-            </template>
-            <!-- <template v-slot:content> -->
-            <template v-slot:content>
+<template>
+    <PfModal :isOpen="emailSetUpModal" @close="closeModal()" title="Email Notification Settings" variant="large">
                 <div class="flex border-b mb-6">
                     <button
                         @click="activeTab = 'email-settings'"
@@ -102,7 +95,7 @@
                             class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full flex items-center space-x-1"
                             >
                             <span>{{ email }}</span>
-                            <button @click="removeEmail(index)" class="text-blue-500 hover:text-red-500 font-bold">&times;</button>
+                            <button @click="removeEmail(index)" class="text-blue-500 hover:text-red-500 font-bold" aria-label="Remove email">&times;</button>
                             </span>
 
                             <!-- Input -->
@@ -236,7 +229,7 @@
                             class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full flex items-center space-x-1"
                             >
                             <span>{{ email }}</span>
-                            <button @click="removeEmail(index)" class="text-blue-500 hover:text-red-500 font-bold">&times;</button>
+                            <button @click="removeEmail(index)" class="text-blue-500 hover:text-red-500 font-bold" aria-label="Remove email">&times;</button>
                             </span>
 
                             <!-- Input -->
@@ -289,9 +282,7 @@
                     </div>            
                 </div>
             </div>
-         </template>
-        <!-- </OldModal> -->
-    </OldModal>
+    </PfModal>
 </template>
 
 <style>
@@ -305,7 +296,7 @@ input[type="checkbox"] {
 import { ref, computed, watch, onMounted, reactive } from 'vue';
 import {pushNotification, Notification } from '@45drives/houston-common-ui';
 import InfoTile from '../common/InfoTile.vue';
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
 import { AuthEmailConfig, SmtpEmailConfig, WarningConfig } from '../../types';
 
 const activeTab = ref('email-settings')

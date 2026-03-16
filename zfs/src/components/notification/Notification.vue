@@ -1,30 +1,29 @@
 <template>
 	<div class="bg-default mr-[2rem]">
 		<div>
-			<div class="border-b border-default">					
-						<Menu>
+			<div class="border-b border-default" ref="notificationWrapperRef">
 							<!-- Menu Button (Bell Icon & Badge) -->
-							<MenuButton  @click="menuOpen = !menuOpen" class="relative rounded-full p-1 bg-default text-default hover:text-gray-600">
+							<button @click="menuOpen = !menuOpen" class="relative rounded-full p-1 bg-default text-default hover:text-gray-600" aria-label="Open notifications">
 								<span class="sr-only">Open notifications</span>
-								
+
 								<!-- Bell Icon (Fixed Positioning) -->
 								<div class="relative">
 								<BellIcon class="w-8 h-8 text-white-700" aria-hidden="true" />
-								
+
 								<!-- Notification Badge -->
 								<span v-if="notificationStore.notificationsCount>0" class="absolute -top-2 -right-2 max-h-[80vh] overflow-y-auto flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold px-1">
 									{{notificationStore.notificationsCount }}
 								</span>
 								</div>
-							</MenuButton>
+							</button>
 
-							<!-- Dropdown Menu Items -->
-							<MenuItems v-bind="emailSetUpModal ? { static: true } : {}" @click.stop class="absolute right-0 overflow-y-scroll z-10 w-[30rem] max-h-[40rem] origin-top-right rounded-md bg-default shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+							<!-- Dropdown Panel -->
+							<div v-if="menuOpen" @click.stop class="absolute right-0 overflow-y-scroll z-10 w-[30rem] max-h-[40rem] origin-top-right rounded-md bg-default shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
 								<div class="flex items-center justify-between text-xl p-4 border-b border-gray-300">
 									<p>Notifications</p>
 									<div class="relative inline-block">
 										<!-- Dropdown Trigger: Cog Icon -->
-										<button @click="toggleDropdown" class="focus:outline-none">
+										<button @click="toggleDropdown" class="focus:outline-none" aria-label="Notification settings">
 											<Cog6ToothIcon class="w-[2rem] h-[2rem] text-gray-300 hover:text-white transition duration-200" />
 										</button>
 
@@ -48,7 +47,7 @@
 								<!-- Notification Items -->
 								 <div class="overflow-y-auto max-h-[30rem] px-4 py-4 space-y-4" ref="scrollContainer" >								
 								<!--  Pool Degraded (Unrecoverable Error) -->
-								 <MenuItem as="div" v-for="notification in notificationStore.notifications" :key="notification.id" v-slot="{ active }"> 
+								 <div v-for="notification in notificationStore.notifications" :key="notification.id">
 									<div class="flex items-start gap-3" v-if="notification.event === 'scrub_finish'">
 										<!-- Icon Based on Scrub Status -->
 										<div>
@@ -395,7 +394,7 @@
 											/> 
 										</div>
 									</div>
-								</MenuItem>
+								</div>
 								<div ref="loadMoreTrigger" class="h-6 w-full bg-transparent"></div>
 							 </div> 
 
@@ -410,8 +409,7 @@
 									</button>
   								</div>
 							
-							</MenuItems>
-						</Menu>
+							</div>
 
 
 			</div>
@@ -428,8 +426,7 @@
 </style>
 <script setup lang="ts">
 
-import { BellIcon, Cog6ToothIcon, CheckCircleIcon,ExclamationCircleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
-import {Menu,MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { BellIcon, Cog6ToothIcon, CheckCircleIcon, ExclamationCircleIcon, XMarkIcon, XCircleIcon } from '@heroicons/vue/24/outline';
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { notificationStore } from "../../store/notification";
 import EmailSetupModal from './EmailSetupModal.vue';
@@ -438,7 +435,25 @@ import EmailSetupModal from './EmailSetupModal.vue';
 const menuOpen = ref(false);
 const showDropdown = ref(false);
 const emailSetUpModal = ref(false);
-const loadMoreTrigger = ref(null)
+const loadMoreTrigger = ref(null);
+const notificationWrapperRef = ref<HTMLElement | null>(null);
+
+/* ---- Click-outside to close the notification panel ---- */
+function onDocumentClick(event: MouseEvent) {
+  if (emailSetUpModal.value) return;
+  if (!notificationWrapperRef.value) return;
+  if (!notificationWrapperRef.value.contains(event.target as Node)) {
+    menuOpen.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', onDocumentClick, true);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocumentClick, true);
+});
 
 // Watch for menu state changes and control page scrolling
 watch(menuOpen, (isOpen) => {
