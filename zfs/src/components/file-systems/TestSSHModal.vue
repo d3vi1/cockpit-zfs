@@ -1,15 +1,11 @@
 <template>
-    <OldModal :isOpen="showFlag" @close="updateShowFlag" :marginTop="'mt-60'" :width="'w-96'" :minWidth="'min-w-min'" :closeOnBackgroundClick="false">
-        <template v-slot:title>
-            <legend class="flex justify-center">Test Passwordless SSH Connection</legend>
-        </template>
-        <template v-slot:content>
-            <label :for="getIdKey('ssh-test')" class="mt-1 block text-sm font-medium leading-6 text-default">SSH Target:</label>
-            <input @keydown.enter="" :id="getIdKey('ssh-test')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="ssh-target" v-model="sshTarget" placeholder="user@hostname or just hostname" />
-            <p v-if="result" class="text-success mt-2">{{ resultMsg }}</p>
-            <p v-if="!result" class="text-danger mt-2">{{ resultMsg }}</p>
-        </template>
-        <template v-slot:footer>
+    <PfModal :isOpen="showFlag" @close="closeModal" title="Test Passwordless SSH Connection">
+        <label :for="getIdKey('ssh-test')" class="mt-1 block text-sm font-medium leading-6 text-default">SSH Target:</label>
+        <input @keydown.enter="" :id="getIdKey('ssh-test')" type="text" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default" name="ssh-target" v-model="sshTarget" placeholder="user@hostname or just hostname" />
+        <p v-if="result" class="text-success mt-2">{{ resultMsg }}</p>
+        <p v-if="!result" class="text-danger mt-2">{{ resultMsg }}</p>
+
+        <template #footer>
             <div class="w-full grid grid-rows-1">
                 <div class="button-group-row mt-2 justify-between">
                     <button @click="closeModal" :id="getIdKey('confirm-no')" name="button-no" class="mt-1 btn btn-secondary object-left justify-start h-fit">Cancel</button>
@@ -26,11 +22,11 @@
                 </div>
             </div>
         </template>
-    </OldModal>
+    </PfModal>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
 import { testSSH } from '../../composables/helpers';
 
 interface TestSSHModalProps {
@@ -42,12 +38,6 @@ const props = defineProps<TestSSHModalProps>();
 const emit = defineEmits(['close']);
 
 const showFlag = ref(props.showFlag);
-
-const updateShowFlag = () => {
-    if (props.showFlag != showFlag.value) {
-        showFlag.value = props.showFlag;
-    }
-}
 
 const closeModal = () => {
     emit('close');

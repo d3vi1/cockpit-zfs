@@ -1,71 +1,47 @@
 <template>
-    <OldModal :isOpen="showRenameModal" @close="showRenameModal = false" :marginTop="'mt-28'" :width="'w-4/12'" :minWidth="'min-w-4/12'" :closeOnBackgroundClick="false">
-        <template v-slot:title>
-            <legend class="flex justify-center">Rename File System</legend>
-        </template>
-        <template v-slot:content>
-            <div>
-                <div class="">
-                    <!-- Parent File System -->
-                    <div class="mt-2">
-                        <label :for="getIdKey('parent-filesystem')" class="block text-sm font-medium leading-6 text-default">Parent File System</label>
-                        <select v-model="parentFS" :id="getIdKey('parent-filesystem')" class="text-default bg-default mt-1 block w-full input-textlike sm:text-sm sm:leading-6" :class="truncateText">
-                            <option v-for="dataset, datasetIdx in datasetsInSamePool" :class="truncateText" :title="dataset.name" :key="datasetIdx">{{ dataset.name }}</option>
-                        </select>
-                    </div>
+    <PfModal :isOpen="showRenameModal" @close="showRenameModal = false" title="Rename File System">
+        <div>
+            <div class="">
+                <!-- Parent File System -->
+                <div class="mt-2">
+                    <label :for="getIdKey('parent-filesystem')" class="block text-sm font-medium leading-6 text-default">Parent File System</label>
+                    <select v-model="parentFS" :id="getIdKey('parent-filesystem')" class="text-default bg-default mt-1 block w-full input-textlike sm:text-sm sm:leading-6" :class="truncateText">
+                        <option v-for="dataset, datasetIdx in datasetsInSamePool" :class="truncateText" :title="dataset.name" :key="datasetIdx">{{ dataset.name }}</option>
+                    </select>
+                </div>
 
-                    <!-- New Name -->
-                    <div class="mt-2">
-                        <label :for="getIdKey('new-name')" class="mt-1 block text-sm font-medium leading-6 text-default">New Name</label>
-                        <input :id="getIdKey('new-name')" type="text" v-model="newName" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default placeholder:text-muted sm:text-sm sm:leading-6" placeholder="New Name" />
-                    </div>
+                <!-- New Name -->
+                <div class="mt-2">
+                    <label :for="getIdKey('new-name')" class="mt-1 block text-sm font-medium leading-6 text-default">New Name</label>
+                    <input :id="getIdKey('new-name')" type="text" v-model="newName" class="input-textlike bg-default mt-1 block w-full py-1.5 px-1.5 text-default placeholder:text-muted sm:text-sm sm:leading-6" placeholder="New Name" />
+                </div>
 
-                    <!-- Force Unmount -->
-                    <div class="mt-2">
-                        <div class="flex flex-row justify-between">
-                            <label :for="getIdKey('force-unmount-filesystem')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Forcefully Unmount File System</label>
-                            <Switch v-model="forceUnmount" :id="getIdKey('force-unmount-filesystem')" :class="[forceUnmount! ? 'bg-primary' : 'bg-accent', 'mt-2 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                                <span class="sr-only">Use setting</span>
-                                <span :class="[forceUnmount! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                    <span :class="[forceUnmount! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                        <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                            <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </span>
-                                    <span :class="[forceUnmount! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                        <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                            <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                        </svg>
-                                    </span>
-                                </span>
-                            </Switch>
-                        </div>
+                <!-- Force Unmount -->
+                <div class="mt-2">
+                    <div class="flex flex-row justify-between">
+                        <label :for="getIdKey('force-unmount-filesystem')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Forcefully Unmount File System</label>
+                        <PfSwitch
+                            :modelValue="forceUnmount"
+                            @update:modelValue="forceUnmount = $event"
+                            :id="getIdKey('force-unmount-filesystem')"
+                        />
                     </div>
-                    <!-- Create non-existent parent file systems -->
-                    <div class="mt-2">
-                        <div class="flex flex-row justify-between">
-                            <label :for="getIdKey('create-parent-filesystems')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Create Non-Existent Parent File Systems</label>
-                            <Switch v-model="createNonExistParent" :id="getIdKey('create-parent-filesystems')" :class="[createNonExistParent! ? 'bg-primary' : 'bg-accent', 'mt-2 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-                                <span class="sr-only">Use setting</span>
-                                <span :class="[createNonExistParent! ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-                                    <span :class="[createNonExistParent! ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                        <svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-                                            <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </span>
-                                    <span :class="[createNonExistParent! ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-                                        <svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-                                            <path d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-                                        </svg>
-                                    </span>
-                                </span>
-                            </Switch>
-                        </div>
+                </div>
+                <!-- Create non-existent parent file systems -->
+                <div class="mt-2">
+                    <div class="flex flex-row justify-between">
+                        <label :for="getIdKey('create-parent-filesystems')" class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Create Non-Existent Parent File Systems</label>
+                        <PfSwitch
+                            :modelValue="createNonExistParent"
+                            @update:modelValue="createNonExistParent = $event"
+                            :id="getIdKey('create-parent-filesystems')"
+                        />
                     </div>
                 </div>
             </div>
-        </template>
-        <template v-slot:footer>
+        </div>
+
+        <template #footer>
             <div class="w-full grid grid-rows-2">
                 <div class="w-full row-start-1">
                     <p class="text-danger" v-if="nameFeedback">{{ nameFeedback }}</p>
@@ -87,13 +63,13 @@
                 </div>
             </div>
         </template>
-    </OldModal>
+    </PfModal>
 </template>
 <script setup lang="ts">
 import { ref, Ref, inject, computed } from 'vue';
 import { renameFileSystem } from '../../composables/datasets';
-import { Switch } from '@headlessui/vue';
-import OldModal from '../common/OldModal.vue';
+import PfModal from '../pf/PfModal.vue';
+import PfSwitch from '../pf/PfSwitch.vue';
 import { ZFSFileSystemInfo } from '@45drives/houston-common-lib';
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
 
@@ -144,10 +120,10 @@ const datasetsInSamePool = computed<ZFSFileSystemInfo[]>(() => {
 async function renameBtn() {
     if (nameCheck(newName.value, parentFS.value)) {
         renaming.value = true;
-        
+
         try {
 			const output: any = await renameFileSystem(props.filesystem.name, (parentFS.value + '/' + newName.value), forceUnmount.value, createNonExistParent.value);
- 
+
 			if (output == null || output.error) {
 				const errorMessage = output?.error || 'Unknown error';
 				renaming.value = false;
@@ -168,7 +144,7 @@ async function renameBtn() {
 const nameCheck = (fileSystemName, fileSystemParent) => {
     let result = true;
     nameFeedback.value = '';
-    	
+
 	if (fileSystemName == '') {
 		result = false;
 		nameFeedback.value = 'Name cannot be empty.';
@@ -197,7 +173,7 @@ function fileSystemNameExists(filesystemName, fileSystemParent, datasets : ZFSFi
 	for (const dataset of datasets) {
 		const existingParentPath = dataset.parentFS;
 		const existingDatasetName = dataset.name.split('/').pop();
-	
+
 		if (existingParentPath === newParentPath && existingDatasetName === filesystemName) {
 			return true;
 		}

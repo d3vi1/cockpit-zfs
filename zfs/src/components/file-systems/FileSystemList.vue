@@ -18,311 +18,153 @@
 			<div class="inline-block min-w-full min-h-full shadow align-middle rounded-md border border-default">
 				<div class="overflow-visible ring-1 ring-black ring-opacity-5 rounded-md">
 
-					<table class="min-w-full divide-y divide-default rounded-md">
-						<thead class="rounded-md">
-							<tr
-								class="bg-well rounded-t-md grid grid-cols-[2rem_4fr_repeat(9,_minmax(0,_1fr))_2.25rem]">
-								<th class="relative py-2 rounded-tl-md col-span-1">
-									<span class="sr-only"></span>
+					<table class="pf-v5-c-table pf-m-compact min-w-full" role="grid">
+						<thead>
+							<tr role="row">
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col" style="width: 2rem;">
+									<span class="sr-only">Expand</span>
 								</th>
-								<th class="py-2 font-semibold text-center text-default col-span-1" :class="truncateText"
-									title="Dataset">Dataset</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Available">Available</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Used">Used</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Used">Used By Snapshots</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Refreservation">Refres.</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Compression">Compression</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Deduplication">Dedup.</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Encrypted">Encrypted</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Mounted">Mounted</th>
-								<th class="py-2 font-semibold text-default col-span-1" :class="truncateText"
-									title="Read Only">Read Only</th>
-								<th class="relative py-2 sm:pr-6 lg:pr-8 rounded-tr-md col-span-1">
-									<span class="sr-only"></span>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Dataset</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Available</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Used</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Used By Snapshots</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Refres.</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Compression</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Dedup.</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Encrypted</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Mounted</th>
+								<th class="pf-v5-c-table__th" role="columnheader" scope="col">Read Only</th>
+								<th class="pf-v5-c-table__th pf-v5-c-table__action" role="columnheader" scope="col">
+									<span class="sr-only">Actions</span>
 								</th>
-
 							</tr>
 						</thead>
 
-						<tbody class="">
-							<tr class="">
-								<div v-if="allDatasets.length > 0 && allDatasetsLoaded == true">
-									<div v-for="dataset, datasetIdx in allDatasets" :key="dataset.name">
+						<tbody v-if="allDatasets.length > 0 && allDatasetsLoaded == true" role="rowgroup">
+							<template v-for="(dataset, datasetIdx) in allDatasets" :key="dataset.name">
 
-										<div v-if="dataset.type == 'FILESYSTEM'" class="border border-default">
-											<Disclosure v-slot="{ open }">
-												<DisclosureButton
-													class="bg-default grid grid-cols-[2rem_4fr_repeat(9,_minmax(0,_1fr))_2.25rem] w-full items-center">
-													<div class="py-1 mt-1 col-span-1 pl-2 justify-self-start"
-														:title="dataset.name">
-														<ChevronUpIcon
-															class="h-10 w-10 text-default transition-all duration-200 transform"
-															:class="{ 'rotate-90': !open, 'rotate-180': open, }" />
-													</div>
-													<div class="py-1 mt-1 col-span-1 text-left min-w-0"
-														:class="[truncateText, `ml-${getNestingLevel(dataset)}`]"
-														:title="dataset.name">{{ dataset.name }}</div>
-													<div class="py-1 mt-1 px-2 text-center font-medium col-span-1 min-w-0"
-														:class="truncateText"
-														:title="convertBytesToSize(dataset.properties.available) ? convertBytesToSize(dataset.properties.available) : 'N/A'">
-														{{ convertBytesToSize(dataset.properties.available) ?
-														convertBytesToSize(dataset.properties.available) : 'N/A' }}
-													</div>
-													<div class="py-1 mt-1 px-2 text-center font-medium col-span-1 min-w-0"
-														:class="truncateText" :title="dataset.properties.usedByDataset">
-														{{
-														dataset.properties.usedByDataset }}</div>
-													<div class="py-1 mt-1 px-2 text-center font-medium col-span-1 min-w-0"
-														:class="truncateText"
-														:title="dataset.properties.usedBySnapshots">{{
-														dataset.properties.usedBySnapshots }}</div>
-													<div class="py-1 mt-1 px-2 text-center font-medium col-span-1 min-w-0"
-														:class="truncateText"
-														:title="dataset.properties.usedbyRefreservation ? dataset.properties.usedbyRefreservation : 'N/A'">
-														{{ dataset.properties.usedbyRefreservation ?
-														dataset.properties.usedbyRefreservation : 'N/A' }}</div>
-													<div v-if="dataset.properties.compression == 'off' || dataset.properties.compression == 'on'"
-														class="py-1 mt-1 col-span-1" :class="truncateText"
-														:title="upperCaseWord(dataset.properties.compression) ? upperCaseWord(dataset.properties.compression) : 'N/A'">
-														{{ upperCaseWord(dataset.properties.compression) ?
-														upperCaseWord(dataset.properties.compression) : 'N/A' }}</div>
-													<div v-else class="py-1 mt-1 col-span-1" :class="truncateText"
-														:title="upperCaseWord(dataset.properties.compression).toUpperCase() ? upperCaseWord(dataset.properties.compression).toUpperCase() : 'N/A'">
-														{{ dataset.properties.compression.toUpperCase() ?
-														dataset.properties.compression.toUpperCase() : 'N/A' }}</div>
-													<div class="py-1 mt-1 px-2 text-center font-medium col-span-1 min-w-0"
-														:class="truncateText"
-														:title="getValue('dedup', dataset.properties.deduplication) ? getValue('dedup', dataset.properties.deduplication) : 'N/A'">
-														{{ getValue('dedup', dataset.properties.deduplication) ?
-														getValue('dedup', dataset.properties.deduplication) : 'N/A' }}
-													</div>
+								<!-- FILESYSTEM rows -->
+								<template v-if="dataset.type == 'FILESYSTEM'">
+									<tr class="pf-v5-c-table__tr pf-v5-c-table__expandable-row-control bg-default border border-default cursor-pointer"
+										role="row"
+										@click="toggleExpanded(dataset.name)">
+										<td class="pf-v5-c-table__td pf-v5-c-table__toggle" role="cell">
+											<button class="pf-v5-c-button pf-m-plain" type="button"
+												:aria-expanded="isExpanded.has(dataset.name)"
+												@click.stop="toggleExpanded(dataset.name)">
+												<ChevronUpIcon
+													class="h-5 w-5 text-default transition-all duration-200 transform"
+													:class="{ 'rotate-90': !isExpanded.has(dataset.name), 'rotate-180': isExpanded.has(dataset.name) }" />
+											</button>
+										</td>
+										<td class="pf-v5-c-table__td" role="cell"
+											:class="truncateText"
+											:style="{ paddingLeft: `${getNestingLevel(dataset) * 0.25}rem` }"
+											:title="dataset.name">{{ dataset.name }}</td>
+										<td class="pf-v5-c-table__td" role="cell"
+											:class="truncateText"
+											:title="convertBytesToSize(dataset.properties.available) ? convertBytesToSize(dataset.properties.available) : 'N/A'">
+											{{ convertBytesToSize(dataset.properties.available) ?
+											convertBytesToSize(dataset.properties.available) : 'N/A' }}
+										</td>
+										<td class="pf-v5-c-table__td" role="cell"
+											:class="truncateText" :title="dataset.properties.usedByDataset">
+											{{ dataset.properties.usedByDataset }}</td>
+										<td class="pf-v5-c-table__td" role="cell"
+											:class="truncateText"
+											:title="dataset.properties.usedBySnapshots">{{
+											dataset.properties.usedBySnapshots }}</td>
+										<td class="pf-v5-c-table__td" role="cell"
+											:class="truncateText"
+											:title="dataset.properties.usedbyRefreservation ? dataset.properties.usedbyRefreservation : 'N/A'">
+											{{ dataset.properties.usedbyRefreservation ?
+											dataset.properties.usedbyRefreservation : 'N/A' }}</td>
+										<td class="pf-v5-c-table__td" role="cell"
+											:class="truncateText"
+											:title="getCompressionDisplay(dataset)">
+											{{ getCompressionDisplay(dataset) }}
+										</td>
+										<td class="pf-v5-c-table__td" role="cell"
+											:class="truncateText"
+											:title="getValue('dedup', dataset.properties.deduplication) ? getValue('dedup', dataset.properties.deduplication) : 'N/A'">
+											{{ getValue('dedup', dataset.properties.deduplication) ?
+											getValue('dedup', dataset.properties.deduplication) : 'N/A' }}
+										</td>
 
-													<div v-if="dataset.encrypted && dataset.key_loaded"
-														class="py-1 mt-1 col-span-1 justify-self-center"
-														title="Encrypted & Unlocked">
-														<LockOpenIcon class="w-5 mt-0.5" aria-hidden="true" />
-													</div>
-													<div v-if="dataset.encrypted && !dataset.key_loaded"
-														class="py-1 mt-1 col-span-1 justify-self-center"
-														title="Encrypted & Locked">
-														<LockClosedIcon class="w-5 mt-0.5" aria-hidden="true" />
-													</div>
-													<div v-if="!dataset.encrypted"
-														class="py-1 mt-1 col-span-1 justify-self-center"
-														title="Not Encrypted">
-														<NoSymbolIcon class="w-5 mt-0.5" aria-hidden="true" />
-													</div>
+										<td class="pf-v5-c-table__td text-center" role="cell">
+											<LockOpenIcon v-if="dataset.encrypted && dataset.key_loaded"
+												class="w-5 inline-block" title="Encrypted &amp; Unlocked" aria-hidden="true" />
+											<LockClosedIcon v-else-if="dataset.encrypted && !dataset.key_loaded"
+												class="w-5 inline-block" title="Encrypted &amp; Locked" aria-hidden="true" />
+											<NoSymbolIcon v-else
+												class="w-5 inline-block" title="Not Encrypted" aria-hidden="true" />
+										</td>
 
-													<div v-if="yesNoToBool(dataset.properties.mounted)"
-														class="py-1 mt-1 col-span-1 justify-self-center"
-														title="Mounted">
-														<CheckIcon class="w-5 mt-0.5" aria-hidden="true" />
-													</div>
-													<div v-if="!yesNoToBool(dataset.properties.mounted)"
-														class="py-1 mt-1 col-span-1 justify-self-center"
-														title="Not Mounted">
-														<NoSymbolIcon class="w-5 mt-0.5" aria-hidden="true" />
-													</div>
+										<td class="pf-v5-c-table__td text-center" role="cell">
+											<CheckIcon v-if="yesNoToBool(dataset.properties.mounted)"
+												class="w-5 inline-block" title="Mounted" aria-hidden="true" />
+											<NoSymbolIcon v-else
+												class="w-5 inline-block" title="Not Mounted" aria-hidden="true" />
+										</td>
 
-													<div v-if="dataset.properties.isReadOnly!"
-														class="py-1 mt-1 col-span-1 justify-self-center"
-														title="Read Only ON">
-														<CheckIcon class="w-5 mt-0.5" aria-hidden="true" />
-													</div>
-													<div v-if="!dataset.properties.isReadOnly!"
-														class="py-1 mt-1 col-span-1 justify-self-center"
-														title="Read Only OFF">
-														<NoSymbolIcon class="w-5 mt-0.5" aria-hidden="true" />
-													</div>
+										<td class="pf-v5-c-table__td text-center" role="cell">
+											<CheckIcon v-if="dataset.properties.isReadOnly!"
+												class="w-5 inline-block" title="Read Only ON" aria-hidden="true" />
+											<NoSymbolIcon v-else
+												class="w-5 inline-block" title="Read Only OFF" aria-hidden="true" />
+										</td>
 
-													<div class="py-1 mt-1 pr-2 col-span-1 justify-self-end">
-														<Menu as="div" class="relative inline-block text-right -mt-1">
-															<div>
-																<MenuButton @click.stop :disabled="!canDestructive"
-																	:aria-disabled="!canDestructive"
-																	:title="!canDestructive ? 'Requires administrative privileges' : ''"
-																	:class="[
-																		'flex items-center rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-gray-100',
-																		canDestructive ? 'bg-default hover:text-white cursor-pointer'
-																			: 'bg-default/60 text-muted cursor-not-allowed'
-																	]">
-																	<span class="sr-only">Open options</span>
-																	<EllipsisVerticalIcon class="w-5"
-																		aria-hidden="true" />
-																</MenuButton>
-															</div>
+										<td class="pf-v5-c-table__td pf-v5-c-table__action" role="cell" @click.stop>
+											<PfDropdownMenu
+												:items="getFileSystemActions(allDatasets[datasetIdx], datasetIdx)"
+												:kebab="true"
+											/>
+										</td>
+									</tr>
 
-															<transition
-																enter-active-class="transition ease-out duration-100"
-																enter-from-class="transform opacity-0 scale-95"
-																enter-to-class="transform opacity-100 scale-100"
-																leave-active-class="transition ease-in duration-75"
-																leave-from-class="transform opacity-100 scale-100"
-																leave-to-class="transform opacity-0 scale-95">
-																<MenuItems @click.stop
-																	class="absolute right-0 z-10 w-56 origin-top-right rounded-md bg-accent shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-																	<div class="py-1">
-																		<MenuItem as="div" v-slot="{ active }">
-																		<a href="#"
-																			@click="loadFileSystemConfig(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Configure
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="!findPoolDataset(allDatasets[datasetIdx])"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="renameThisDataset(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Rename
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="allDatasets[datasetIdx].properties.mounted == 'yes'"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="unmountThisFileSystem(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Unmount
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="allDatasets[datasetIdx].properties.mounted == 'no' && !allDatasets[datasetIdx].encrypted"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="mountThisFileSystem(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Mount
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="allDatasets[datasetIdx].properties.mounted == 'no' && allDatasets[datasetIdx].encrypted && allDatasets[datasetIdx].key_loaded"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="mountThisFileSystem(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Mount
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="allDatasets[datasetIdx].properties.mounted == 'no' && allDatasets[datasetIdx].encrypted && !allDatasets[datasetIdx].key_loaded"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="handleFileSystemEncryption(allDatasets[datasetIdx], 'unlock')"
-																			:class="[active ? 'bg-green-600 text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Unlock
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="allDatasets[datasetIdx].properties.mounted == 'no' && allDatasets[datasetIdx].encrypted && allDatasets[datasetIdx].key_loaded"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="handleFileSystemEncryption(allDatasets[datasetIdx], 'lock')"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Lock
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="allDatasets[datasetIdx].encrypted && allDatasets[datasetIdx].key_loaded"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="changeThisPassphrase(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Change
-																			Passphrase</a>
-																		</MenuItem>
-																		<MenuItem as="div" v-slot="{ active }">
-																		<a href="#"
-																			@click="createSnapshotBtn(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Create
-																			Snapshot</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="!findPoolDataset(allDatasets[datasetIdx])"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="deleteFileSystem(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Destroy
-																			File System</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="!bulkSnapDestroyMode.get(dataset.name)"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="enterBulkSnapDestroyMode(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-danger text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Bulk
-																			Destroy Snapshot Mode</a>
-																		</MenuItem>
-																		<MenuItem as="div"
-																			v-if="bulkSnapDestroyMode.get(dataset.name)"
-																			v-slot="{ active }">
-																		<a href="#"
-																			@click="exitBulkSnapDestroyMode(allDatasets[datasetIdx])"
-																			:class="[active ? 'bg-default text-default' : 'text-muted', 'block px-4 py-2 text-sm']">Leave
-																			Bulk Destroy Mode</a>
-																		</MenuItem>
-																	</div>
-																</MenuItems>
-															</transition>
-														</Menu>
-													</div>
-												</DisclosureButton>
+									<!-- Expandable row for snapshots -->
+									<tr v-if="isExpanded.has(dataset.name)"
+										class="pf-v5-c-table__expandable-row pf-m-expanded" role="row">
+										<td :colspan="12" class="pf-v5-c-table__td p-0" role="cell">
+											<SnapshotsList :filesystem="allDatasets[datasetIdx]"
+												:item="'filesystem'"
+												:bulkSnapDestroyMode="bulkSnapDestroyMode.get(allDatasets[datasetIdx].name)" />
+										</td>
+									</tr>
+								</template>
 
-												<DisclosurePanel>
-													<SnapshotsList :filesystem="allDatasets[datasetIdx]"
-														:item="'filesystem'"
-														:bulkSnapDestroyMode="bulkSnapDestroyMode.get(allDatasets[datasetIdx].name)" />
-												</DisclosurePanel>
-
-											</Disclosure>
-										</div>
-										<div v-if="dataset.type == 'SNAPSHOT'" class="border border-default">
-											<div
-												class="bg-primary grid grid-cols-[2rem_3fr_repeat(9,_minmax(0,_1fr))_2rem] w-full justify-center text-center">
-												<div class="py-1 mt-1 mr-2 col-span-1 ml-4 justify-self-start"
-													:title="dataset.name">
-													<CameraIcon class="-mt-1 mx-2 h-8 w-8 text-muted" />
-												</div>
-												<div class="py-1 mt-1 col-span-1 text-left text-white"
-													:class="[truncateText, `ml-${getNestingLevel(dataset)}`]"
-													:title="dataset.name">{{ dataset.name }}</div>
-												<div class="py-1 mt-1 col-span-1 text-white">N/A</div>
-												<div class="py-1 mt-1 col-span-1 text-white" :class="truncateText"
-													:title="convertBytesToSize(dataset.properties.used.parsed)">{{
-													convertBytesToSize(dataset.properties.used.parsed) }}</div>
-												<div class="py-1 mt-1 col-span-1 text-white">N/A</div>
-												<div class="py-1 mt-1 col-span-1 text-white">N/A</div>
-												<div class="py-1 mt-1 col-span-1 text-white">N/A</div>
-												<div v-if="dataset.properties.encryption.value !== 'off' && dataset.properties.keystatus.value == 'available'"
-													class="py-1 mt-1 col-span-1 text-white justify-self-center items-center text-center"
-													title="Encrypted & Unlocked">
-													<LockOpenIcon class="w-5 mt-0.5" aria-hidden="true" />
-												</div>
-												<div v-if="dataset.properties.encryption.value !== 'off' && dataset.properties.keystatus.value == 'unavailable'"
-													class="py-1 mt-1 col-span-1 text-white justify-self-center items-center text-center"
-													title="Encrypted & Locked">
-													<LockClosedIcon class="w-5 mt-0.5" aria-hidden="true" />
-												</div>
-												<div v-if="dataset.properties.encryption.value === 'off' && dataset.properties.keystatus.value == ''"
-													class="py-1 mt-1 col-span-1 text-white justify-self-center items-center text-center"
-													title="Not Encrypted">
-													<NoSymbolIcon class="w-5 mt-0.5" aria-hidden="true" />
-												</div>
-												<div
-													class="py-1 mt-1 col-span-1 text-white justify-self-center items-center text-center">
-													N/A</div>
-												<div
-													class="py-1 mt-1 col-span-1 text-white justify-self-center items-center text-center">
-													N/A</div>
-												<div
-													class="relative py-1 mt-1 p-3 text-right font-medium sm:pr-6 lg:pr-8">
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</tr>
+								<!-- SNAPSHOT rows -->
+								<tr v-if="dataset.type == 'SNAPSHOT'"
+									class="pf-v5-c-table__tr bg-primary border border-default" role="row">
+									<td class="pf-v5-c-table__td" role="cell">
+										<CameraIcon class="h-6 w-6 text-muted" />
+									</td>
+									<td class="pf-v5-c-table__td text-white" role="cell"
+										:class="truncateText"
+										:style="{ paddingLeft: `${getNestingLevel(dataset) * 0.25}rem` }"
+										:title="dataset.name">{{ dataset.name }}</td>
+									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td text-white" role="cell"
+										:class="truncateText"
+										:title="convertBytesToSize(dataset.properties.used.parsed)">{{
+										convertBytesToSize(dataset.properties.used.parsed) }}</td>
+									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td text-white" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td text-white text-center" role="cell">
+										<LockOpenIcon v-if="dataset.properties.encryption.value !== 'off' && dataset.properties.keystatus.value == 'available'"
+											class="w-5 inline-block" title="Encrypted &amp; Unlocked" aria-hidden="true" />
+										<LockClosedIcon v-else-if="dataset.properties.encryption.value !== 'off' && dataset.properties.keystatus.value == 'unavailable'"
+											class="w-5 inline-block" title="Encrypted &amp; Locked" aria-hidden="true" />
+										<NoSymbolIcon v-else
+											class="w-5 inline-block" title="Not Encrypted" aria-hidden="true" />
+									</td>
+									<td class="pf-v5-c-table__td text-white text-center" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td text-white text-center" role="cell">N/A</td>
+									<td class="pf-v5-c-table__td" role="cell"></td>
+								</tr>
+							</template>
 						</tbody>
 					</table>
 
@@ -418,14 +260,15 @@
 
 <script setup lang="ts">
 import { ref, inject, Ref, provide, watch, onMounted, computed, reactive } from "vue";
-import { EllipsisVerticalIcon, ArrowPathIcon, ChevronUpIcon, LockClosedIcon, LockOpenIcon, NoSymbolIcon, CheckIcon, } from '@heroicons/vue/24/outline';
+import { ArrowPathIcon, ChevronUpIcon, LockClosedIcon, LockOpenIcon, NoSymbolIcon, CheckIcon, } from '@heroicons/vue/24/outline';
 import { CameraIcon } from '@heroicons/vue/24/solid'
-import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
 import { loadDatasets, loadSnapshots } from "../../composables/loadData";
 import { getValue, convertBytesToSize, upperCaseWord, yesNoToBool } from '../../composables/helpers';
 import { destroyDataset, unmountFileSystem, mountFileSystem, lockFileSystem } from "../../composables/datasets";
 import LoadingSpinner from "../common/LoadingSpinner.vue";
 import SnapshotsList from "../snapshots/SnapshotsList.vue";
+import PfDropdownMenu from "../pf/PfDropdownMenu.vue";
+import type { DropdownMenuItem } from "../pf/PfDropdownMenu.vue";
 import { ZPool, ZFSFileSystemInfo } from "@45drives/houston-common-lib";
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
 import { ConfirmationCallback, Snapshot } from "../../types";
@@ -433,7 +276,138 @@ import { getSnapshotsOfDataset } from "../../composables/snapshots";
 
 const truncateText = inject<Ref<string>>('style-truncate-text')!;
 const canDestructive = inject<Ref<boolean>>('can-destructive')!;
-	
+
+///////////////// Expandable Rows //////////////////
+/////////////////////////////////////////////////////
+const isExpanded = reactive(new Set<string>());
+
+function toggleExpanded(name: string) {
+	if (isExpanded.has(name)) {
+		isExpanded.delete(name);
+	} else {
+		isExpanded.add(name);
+	}
+}
+
+function getCompressionDisplay(dataset: any): string {
+	if (dataset.properties.compression === 'off' || dataset.properties.compression === 'on') {
+		return upperCaseWord(dataset.properties.compression) || 'N/A';
+	}
+	return dataset.properties.compression?.toUpperCase() || 'N/A';
+}
+
+///////////////// Dropdown Actions /////////////////
+/////////////////////////////////////////////////////
+function getFileSystemActions(dataset: any, datasetIdx: number): DropdownMenuItem[] {
+	const items: DropdownMenuItem[] = [];
+
+	items.push({
+		label: 'Configure File System',
+		action: () => loadFileSystemConfig(allDatasets.value[datasetIdx]),
+		disabled: !canDestructive.value,
+		tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+	});
+
+	if (!findPoolDataset(allDatasets.value[datasetIdx])) {
+		items.push({
+			label: 'Rename File System',
+			action: () => renameThisDataset(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (allDatasets.value[datasetIdx].properties.mounted == 'yes') {
+		items.push({
+			label: 'Unmount File System',
+			action: () => unmountThisFileSystem(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (allDatasets.value[datasetIdx].properties.mounted == 'no' && !allDatasets.value[datasetIdx].encrypted) {
+		items.push({
+			label: 'Mount File System',
+			action: () => mountThisFileSystem(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (allDatasets.value[datasetIdx].properties.mounted == 'no' && allDatasets.value[datasetIdx].encrypted && allDatasets.value[datasetIdx].key_loaded) {
+		items.push({
+			label: 'Mount File System',
+			action: () => mountThisFileSystem(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (allDatasets.value[datasetIdx].properties.mounted == 'no' && allDatasets.value[datasetIdx].encrypted && !allDatasets.value[datasetIdx].key_loaded) {
+		items.push({
+			label: 'Unlock File System',
+			action: () => handleFileSystemEncryption(allDatasets.value[datasetIdx], 'unlock'),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (allDatasets.value[datasetIdx].properties.mounted == 'no' && allDatasets.value[datasetIdx].encrypted && allDatasets.value[datasetIdx].key_loaded) {
+		items.push({
+			label: 'Lock File System',
+			action: () => handleFileSystemEncryption(allDatasets.value[datasetIdx], 'lock'),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (allDatasets.value[datasetIdx].encrypted && allDatasets.value[datasetIdx].key_loaded) {
+		items.push({
+			label: 'Change Passphrase',
+			action: () => changeThisPassphrase(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	items.push({
+		label: 'Create Snapshot',
+		action: () => createSnapshotBtn(allDatasets.value[datasetIdx]),
+		disabled: !canDestructive.value,
+		tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+	});
+
+	if (!findPoolDataset(allDatasets.value[datasetIdx])) {
+		items.push({
+			label: 'Destroy File System',
+			action: () => deleteFileSystem(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (!bulkSnapDestroyMode.get(dataset.name)) {
+		items.push({
+			label: 'Bulk Destroy Snapshot Mode',
+			action: () => enterBulkSnapDestroyMode(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	if (bulkSnapDestroyMode.get(dataset.name)) {
+		items.push({
+			label: 'Leave Bulk Destroy Mode',
+			action: () => exitBulkSnapDestroyMode(allDatasets.value[datasetIdx]),
+			disabled: !canDestructive.value,
+			tooltip: !canDestructive.value ? 'Requires administrative privileges' : undefined,
+		});
+	}
+
+	return items;
+}
+
 ///////// Values for Confirmation Modals ////////////
 /////////////////////////////////////////////////////
 const operationRunning = ref(false);
