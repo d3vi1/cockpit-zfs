@@ -16,7 +16,7 @@
                 <div>
                     <label :for="getIdKey('snapshot-name')" class="block text-sm font-medium leading-6 text-default">Snapshot Name</label>
                     <input v-if="!newSnapshot.isCustomName" type="text" v-model="newSnapshot.name" name="snapshot-name" :id="getIdKey('snapshot-name')" class="mt-1 block w-full input-textlike bg-default" placeholder="YYYY.MM.DD-HH.MM.SS" disabled />
-                    <input v-if="newSnapshot.isCustomName" @keydown.enter="createSnapButton(newSnapshot)" type="text" v-model="newSnapshot.name" name="snapshot-name" :id="getIdKey('snapshot-name')" class="mt-1 block w-full input-textlike bg-default" placeholder="Enter Name Here" />
+                    <input v-if="newSnapshot.isCustomName" type="text" v-model="newSnapshot.name" name="snapshot-name" :id="getIdKey('snapshot-name')" class="mt-1 block w-full input-textlike bg-default" placeholder="Enter Name Here" />
                 </div>
                 <div>
                     <PfSwitch v-model="newSnapshot.snapChildren" :id="getIdKey('snap-children')" label="Create snapshots of child file systems" />
@@ -116,8 +116,9 @@ const newSnapshot = ref<NewSnapshot>({
 const nameFeedback = ref('');
 const filesystemFeedback = ref('');
 
-function onEnterKey() {
-	if (!creating.value) {
+function onEnterKey(event: KeyboardEvent) {
+	const target = event.target as HTMLElement;
+	if (target.tagName === 'INPUT' && (target as HTMLInputElement).type === 'text' && !creating.value) {
 		createSnapButton(newSnapshot.value);
 	}
 }
