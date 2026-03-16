@@ -106,33 +106,7 @@
 					<!-- If Primary VDev is MIRROR or RAIDZ(x) then SPECIAL, LOG and DEDUP must be MIRROR -->
 					<div v-if="poolConfig.vdevs[vDevIdx].type == 'log' || poolConfig.vdevs[vDevIdx].type == 'special' || poolConfig.vdevs[vDevIdx].type == 'dedup'"
 						class="flex flex-row">
-						<label :for="getIdKey('mirror-enabled')"
-							class="mt-2 mr-2 block text-sm font-medium leading-6 text-default">Mirror ({{
-							upperCaseWord(poolConfig.vdevs[vDevIdx].type) }})</label>
-
-						<Switch v-model="poolConfig.vdevs[vDevIdx].isMirror"
-							:class="[poolConfig.vdevs[vDevIdx].isMirror ? 'bg-primary' : 'bg-accent', 'mt-2 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-							<span class="sr-only">Use setting</span>
-							<span
-								:class="[poolConfig.vdevs[vDevIdx].isMirror ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-								<span
-									:class="[poolConfig.vdevs[vDevIdx].isMirror ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-										<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-											stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-									</svg>
-								</span>
-								<span
-									:class="[poolConfig.vdevs[vDevIdx].isMirror ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-										<path
-											d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-									</svg>
-								</span>
-							</span>
-						</Switch>
+						<PfSwitch v-model="poolConfig.vdevs[vDevIdx].isMirror" :id="getIdKey('mirror-enabled')" :label="`Mirror (${upperCaseWord(poolConfig.vdevs[vDevIdx].type)})`" />
 					</div>
 				</div>
 			</div>
@@ -187,32 +161,8 @@
 
 			<!-- LZ4 Compression (Toggle) -->
 			<div>
-				<label :for="getIdKey('lz4-enabled')" class="mt-1 block text-sm font-medium leading-6 text-default">LZ4
-					Compression</label>
-				<Switch :id="getIdKey('lz4-enabled')" :modelValue="poolConfig.compression === 'lz4'"
-					@update:modelValue="poolConfig.compression = $event ? 'lz4' : 'off'"
-					:class="[poolConfig.compression === 'lz4' ? 'bg-primary' : 'bg-accent',
-						'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-					<span class="sr-only">Use setting</span>
-					<span
-						:class="[poolConfig.compression === 'lz4' ? 'translate-x-5' : 'translate-x-0',
-							'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-						<span :class="[poolConfig.compression === 'lz4' ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in',
-							'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-							<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-								<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-									stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-						</span>
-						<span :class="[poolConfig.compression === 'lz4' ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out',
-							'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-							<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-								<path
-									d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-							</svg>
-						</span>
-					</span>
-				</Switch>
+				<PfSwitch :id="getIdKey('lz4-enabled')" :modelValue="poolConfig.compression === 'lz4'"
+					@update:modelValue="poolConfig.compression = $event ? 'lz4' : 'off'" label="LZ4 Compression" />
 			</div>
 
 			<!-- Advanced Settings (hidden for better UI/UX) -->
@@ -232,32 +182,8 @@
 						<div class="bg-well rounded-md p-2">
 							<!-- Deduplication (Toggle) -->
 							<div class="ml-3 w-full">
-								<label :for="getIdKey('deduplication-enabled')"
-									class="mt-1 block text-sm font-medium leading-6 text-default">Deduplication</label>
-								<Switch :id="getIdKey('deduplication-enabled')" :modelValue="poolConfig.dedup === 'on'"
-									@update:modelValue="poolConfig.dedup = $event ? 'on' : 'off'"
-									:class="[poolConfig.dedup === 'on' ? 'bg-primary' : 'bg-accent',
-										'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-									<span class="sr-only">Use setting</span>
-									<span
-										:class="[poolConfig.dedup === 'on' ? 'translate-x-5' : 'translate-x-0',
-											'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-										<span :class="[poolConfig.dedup === 'on' ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-											<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-												<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-													stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-											</svg>
-										</span>
-										<span :class="[poolConfig.dedup === 'on' ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-											<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-												<path
-													d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-											</svg>
-										</span>
-									</span>
-								</Switch>
+								<PfSwitch :id="getIdKey('deduplication-enabled')" :modelValue="poolConfig.dedup === 'on'"
+									@update:modelValue="poolConfig.dedup = $event ? 'on' : 'off'" label="Deduplication" />
 							</div>
 
 							<!-- Refreservation (Slider) -->
@@ -277,98 +203,25 @@
 
 							<!-- Auto-Expand Pool (Toggle) -->
 							<div class="ml-3 w-full">
-								<label :for="getIdKey('auto-expand-enabled')"
-									class="mt-1 block text-sm font-medium leading-6 text-default">Auto-Expand Pool (When
-									Larger Devices are Added)</label>
-								<Switch :id="getIdKey('auto-expand-enabled')"
+								<PfSwitch :id="getIdKey('auto-expand-enabled')"
 									:modelValue="poolConfig.autoexpand === 'on'"
 									@update:modelValue="poolConfig.autoexpand = $event ? 'on' : 'off'"
-									:class="[poolConfig.autoexpand === 'on' ? 'bg-primary' : 'bg-accent',
-										'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-									<span class="sr-only">Use setting</span>
-									<span
-										:class="[poolConfig.autoexpand === 'on' ? 'translate-x-5' : 'translate-x-0',
-											'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-										<span :class="[poolConfig.autoexpand === 'on' ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-											<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-												<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-													stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-											</svg>
-										</span>
-										<span :class="[poolConfig.autoexpand === 'on' ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-											<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-												<path
-													d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-											</svg>
-										</span>
-									</span>
-								</Switch>
+									label="Auto-Expand Pool (When Larger Devices are Added)" />
 							</div>
 
 							<!-- Auto-Replace Devices (Toggle) -->
 							<div class="ml-3 w-full">
-								<label :for="getIdKey('auto-replace-enabled')"
-									class="mt-1 block text-sm font-medium leading-6 text-default">Auto-Replace
-									Devices</label>
-								<Switch :id="getIdKey('auto-replace-enabled')"
+								<PfSwitch :id="getIdKey('auto-replace-enabled')"
 									:modelValue="poolConfig.autoreplace === 'on'"
 									@update:modelValue="poolConfig.autoreplace = $event ? 'on' : 'off'"
-									:class="[poolConfig.autoreplace === 'on' ? 'bg-primary' : 'bg-accent',
-										'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-									<span class="sr-only">Use setting</span>
-									<span
-										:class="[poolConfig.autoreplace === 'on' ? 'translate-x-5' : 'translate-x-0',
-											'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-										<span :class="[poolConfig.autoreplace === 'on' ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-											<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-												<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-													stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-											</svg>
-										</span>
-										<span :class="[poolConfig.autoreplace === 'on' ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']" aria-hidden="true">
-											<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-												<path
-													d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-											</svg>
-										</span>
-									</span>
-								</Switch>
+									label="Auto-Replace Devices" />
 							</div>
 
 							<!-- Auto-TRIM (Toggle) -->
 							<div class="ml-3 w-full">
-								<label :for="getIdKey('auto-trim-enabled')"
-									class="mt-1 block text-sm font-medium leading-6 text-default">Automatic TRIM</label>
-								<Switch :id="getIdKey('auto-trim-enabled')" :modelValue="poolConfig.autotrim === 'on'"
+								<PfSwitch :id="getIdKey('auto-trim-enabled')" :modelValue="poolConfig.autotrim === 'on'"
 									@update:modelValue="poolConfig.autotrim = $event ? 'on' : 'off'"
-									:class="[poolConfig.autotrim === 'on' ? 'bg-primary' : 'bg-accent',
-										'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-									<span class="sr-only">Use setting</span>
-									<span
-										:class="[poolConfig.autotrim === 'on' ? 'translate-x-5' : 'translate-x-0',
-											'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-										<span :class="[poolConfig.autotrim === 'on' ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-											aria-hidden="true">
-											<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-												<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-													stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-											</svg>
-										</span>
-										<span :class="[poolConfig.autotrim === 'on' ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out',
-											'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-											aria-hidden="true">
-											<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-												<path
-													d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-											</svg>
-										</span>
-									</span>
-								</Switch>
+									label="Automatic TRIM" />
 							</div>
 						</div>
 					</DisclosurePanel>
@@ -417,7 +270,8 @@
 <script setup lang="ts">
 import { inject, ref, Ref, computed, watchEffect, onMounted, watch } from 'vue';
 import { ChevronUpIcon, ExclamationCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
-import { Switch, Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
+import PfSwitch from '../pf/PfSwitch.vue';
 import { isBoolOnOff, convertSizeToBytes, upperCaseWord, isBoolCompression, getDiskIDName, truncateName, getFullDiskInfo } from '../../composables/helpers';
 import { loadImportablePools } from '../../composables/loadImportables';
 import { ZPool ,VDevDisk, ZFSFileSystemInfo, ZpoolCreateOptions, ZPoolBase, VDev } from '@45drives/houston-common-lib';

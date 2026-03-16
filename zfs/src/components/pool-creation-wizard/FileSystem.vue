@@ -24,31 +24,7 @@
 
 			<!-- Encryption (Toggle) -> Reveals extra fields-->
 			<div>
-				<label :for="getIdKey('encryption')"
-					class="mt-1 block text-sm font-medium leading-6 text-default">Encryption</label>
-				<Switch :id="getIdKey('encryption')" v-model="fileSystemConfig.encrypted"
-					:class="[fileSystemConfig.encrypted ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-					<span class="sr-only">Use setting</span>
-					<span
-						:class="[fileSystemConfig.encrypted ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-						<span
-							:class="[fileSystemConfig.encrypted ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-							aria-hidden="true">
-							<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-								<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-									stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-						</span>
-						<span
-							:class="[fileSystemConfig.encrypted ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-							aria-hidden="true">
-							<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-								<path
-									d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-							</svg>
-						</span>
-					</span>
-				</Switch>
+				<PfSwitch :id="getIdKey('encryption')" v-model="fileSystemConfig.encrypted" label="Encryption" />
 			</div>
 
 			<div v-if="fileSystemConfig.encrypted">
@@ -139,31 +115,7 @@
 
 			<!-- Inherit Pool Settings (Toggle) -> On by Default, if Off then reveals all fields to set -->
 			<div>
-				<label :for="getIdKey('inherit')" class="mt-1 block text-sm font-medium leading-6 text-default">Inherit
-					Parent/Default Settings</label>
-				<Switch :id="getIdKey('inherit')" v-model="fileSystemConfig.inherit"
-					:class="[fileSystemConfig.inherit ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-					<span class="sr-only">Use setting</span>
-					<span
-						:class="[fileSystemConfig.inherit ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-						<span
-							:class="[fileSystemConfig.inherit ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-							aria-hidden="true">
-							<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-								<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-									stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-						</span>
-						<span
-							:class="[fileSystemConfig.inherit ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-							aria-hidden="true">
-							<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-								<path
-									d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-							</svg>
-						</span>
-					</span>
-				</Switch>
+				<PfSwitch :id="getIdKey('inherit')" v-model="fileSystemConfig.inherit" label="Inherit Parent/Default Settings" />
 			</div>
 
 			<div v-if="!fileSystemConfig.inherit">
@@ -305,31 +257,7 @@
 
 				<!-- Read Only (Toggle) -->
 				<div>
-					<label :for="getIdKey('fs-read-only')"
-						class="mt-1 block text-sm font-medium leading-6 text-default">Read Only</label>
-					<Switch v-model="fileSystemConfig.properties.isReadOnly"
-						:class="[fileSystemConfig.properties.isReadOnly ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-						<span class="sr-only">Use setting</span>
-						<span
-							:class="[fileSystemConfig.properties.isReadOnly ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-							<span
-								:class="[fileSystemConfig.properties.isReadOnly ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-								aria-hidden="true">
-								<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-									<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-										stroke-linecap="round" stroke-linejoin="round" />
-								</svg>
-							</span>
-							<span
-								:class="[fileSystemConfig.properties.isReadOnly ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-								aria-hidden="true">
-								<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-									<path
-										d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-								</svg>
-							</span>
-						</span>
-					</Switch>
+					<PfSwitch :id="getIdKey('fs-read-only')" v-model="fileSystemConfig.properties.isReadOnly" label="Read Only" />
 				</div>
 
 			</div>
@@ -338,12 +266,8 @@
 
 	<!-- STANDALONE FILE SYSTEM CREATION -->
 	<div v-if="isStandalone == true">
-		<OldModal :isOpen="showFSWizard" @close="showFSWizard = false" :marginTop="'mt-28'" :width="'w-3/5'"
-			:minWidth="'min-w-3/5'" :closeOnBackgroundClick="false">
-			<template v-slot:title>
-				<legend class="flex justify-center">Create a New File System</legend>
-			</template>
-			<template v-slot:content>
+		<PfModal :isOpen="showFSWizard" title="Create a New File System" variant="large" @close="showFSWizard = false">
+			<template #default>
 				<!-- Name of Parent File System (Text) -->
 				<div>
 					<label :for="getIdKey('parent-filesystem')"
@@ -368,31 +292,7 @@
 
 				<!-- Encryption (Toggle) -> Reveals extra fields-->
 				<div>
-					<label :for="getIdKey('encryption')"
-						class="mt-1 block text-sm font-medium leading-6 text-default">Encryption</label>
-					<Switch :id="getIdKey('encryption')" v-model="newFileSystemConfig.encrypted"
-						:class="[newFileSystemConfig.encrypted ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-						<span class="sr-only">Use setting</span>
-						<span
-							:class="[newFileSystemConfig.encrypted ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-							<span
-								:class="[newFileSystemConfig.encrypted ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-								aria-hidden="true">
-								<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-									<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-										stroke-linecap="round" stroke-linejoin="round" />
-								</svg>
-							</span>
-							<span
-								:class="[newFileSystemConfig.encrypted ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-								aria-hidden="true">
-								<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-									<path
-										d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-								</svg>
-							</span>
-						</span>
-					</Switch>
+					<PfSwitch :id="getIdKey('encryption')" v-model="newFileSystemConfig.encrypted" label="Encryption" />
 				</div>
 
 				<div v-if="newFileSystemConfig.encrypted">
@@ -486,31 +386,7 @@
 
 				<!-- Inherit Pool Settings (Toggle) -> On by Default, if Off then reveals all fields to set -->
 				<div>
-					<label :for="getIdKey('inherit')"
-						class="mt-1 block text-sm font-medium leading-6 text-default">Inherit Pool Settings</label>
-					<Switch :id="getIdKey('inherit')" v-model="newFileSystemConfig.inherit"
-						:class="[newFileSystemConfig.inherit ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-						<span class="sr-only">Use setting</span>
-						<span
-							:class="[newFileSystemConfig.inherit ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-							<span
-								:class="[newFileSystemConfig.inherit ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-								aria-hidden="true">
-								<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-									<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2"
-										stroke-linecap="round" stroke-linejoin="round" />
-								</svg>
-							</span>
-							<span
-								:class="[newFileSystemConfig.inherit ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-								aria-hidden="true">
-								<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-									<path
-										d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-								</svg>
-							</span>
-						</span>
-					</Switch>
+					<PfSwitch :id="getIdKey('inherit')" v-model="newFileSystemConfig.inherit" label="Inherit Pool Settings" />
 				</div>
 
 				<div v-if="!newFileSystemConfig.inherit">
@@ -648,35 +524,11 @@
 
 					<!-- Read Only (Toggle) -->
 					<div>
-						<label :for="getIdKey('fs-read-only')"
-							class="mt-1 block text-sm font-medium leading-6 text-default">Read Only</label>
-						<Switch v-model="newFileSystemConfig.properties.isReadOnly"
-							:class="[newFileSystemConfig.properties.isReadOnly ? 'bg-primary' : 'bg-accent', 'mt-1 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2']">
-							<span class="sr-only">Use setting</span>
-							<span
-								:class="[newFileSystemConfig.properties.isReadOnly ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-default shadow ring-0 transition duration-200 ease-in-out']">
-								<span
-									:class="[newFileSystemConfig.properties.isReadOnly ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-muted" fill="none" viewBox="0 0 12 12">
-										<path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor"
-											stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-									</svg>
-								</span>
-								<span
-									:class="[newFileSystemConfig.properties.isReadOnly ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity']"
-									aria-hidden="true">
-									<svg class="h-3 w-3 text-primary" fill="currentColor" viewBox="0 0 12 12">
-										<path
-											d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z" />
-									</svg>
-								</span>
-							</span>
-						</Switch>
+						<PfSwitch :id="getIdKey('fs-read-only')" v-model="newFileSystemConfig.properties.isReadOnly" label="Read Only" />
 					</div>
 				</div>
 			</template>
-			<template v-slot:footer>
+			<template #footer>
 				<div class="w-full grid grid-rows-2">
 					<div class="w-full row-start-1">
 						<div class="button-group-row mt-2 justify-self-center">
@@ -687,13 +539,13 @@
 						</div>
 					</div>
 					<div class="button-group-row w-full row-start-2 justify-between mt-2">
-						<button id="cancel" class="mt-1 btn btn-danger object-left justify-start h-fit"
+						<button id="cancel" class="pf-v5-c-button pf-m-danger mt-1"
 							@click="showFSWizard = false">Cancel</button>
 						<button v-if="!saving" @click="fsCreateBtn(newFileSystemConfig)" :id="getIdKey('create-fs-btn')"
-							name="create-fs-btn" class="mt-1 btn btn-primary object-right justify-end h-fit">Create File
+							name="create-fs-btn" class="pf-v5-c-button pf-m-primary mt-1">Create File
 							System</button>
 						<button disabled v-if="saving" :id="getIdKey('create-fs-spinner')" type="button"
-							class="btn btn-danger object-right justify-end">
+							class="pf-v5-c-button pf-m-primary pf-m-in-progress">
 							<svg aria-hidden="true" role="status"
 								class="inline w-4 h-4 mr-3 text-gray-200 animate-spin text-default"
 								viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -709,18 +561,18 @@
 					</div>
 				</div>
 			</template>
-		</OldModal>
+		</PfModal>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { EyeSlashIcon, EyeIcon } from '@heroicons/vue/24/outline';
 import { ref, Ref, inject, computed, onMounted, onUpdated } from 'vue';
-import { Switch } from '@headlessui/vue';
+import PfSwitch from '../pf/PfSwitch.vue';
+import PfModal from '../pf/PfModal.vue';
 import { convertSizeToBytes, isBoolOnOff, isBoolCompression, getValue, upperCaseWord } from '../../composables/helpers';
 import {  createEncryptedDataset } from '../../composables/datasets';
 import { ZFSManager, ZFSFileSystemInfo, Dataset,DatasetCreateOptions, ZPool, ZPoolBase, ZpoolCreateOptions ,} from '@45drives/houston-common-lib';
-import OldModal from '../common/OldModal.vue';
 import { loadDatasets } from '../../composables/loadData';
 import { InformationCircleIcon } from '@heroicons/vue/24/solid';
 import { pushNotification, Notification } from '@45drives/houston-common-ui';
