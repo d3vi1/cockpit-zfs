@@ -51,6 +51,7 @@
 										<td class="pf-v5-c-table__td pf-v5-c-table__toggle" role="cell">
 											<button class="pf-v5-c-button pf-m-plain" type="button"
 												:aria-expanded="isExpanded.has(dataset.name)"
+												aria-label="Toggle row details"
 												@click.stop="toggleExpanded(dataset.name)">
 												<ChevronUpIcon
 													class="h-5 w-5 text-default transition-all duration-200 transform"

@@ -3,7 +3,7 @@
 	<tr class="pf-v5-c-table__tr bg-default" @click="isExpanded = !isExpanded" style="cursor: pointer;">
 		<td class="pf-v5-c-table__toggle">
 			<button class="pf-v5-c-button pf-m-plain" @click.stop="isExpanded = !isExpanded"
-				:aria-expanded="isExpanded" :title="poolData[props.poolIdx].name">
+				:aria-expanded="isExpanded" :title="poolData[props.poolIdx].name" aria-label="Toggle pool details">
 				<svg class="pf-v5-c-table__toggle-icon" :style="{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"
 					viewBox="0 0 256 512" fill="currentColor" aria-hidden="true" style="width:1em;height:1em;">
 					<path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/>
