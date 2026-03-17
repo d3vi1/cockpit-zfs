@@ -32,3 +32,7 @@ src/version.js
 # Agent artifacts (local-only)
 AGENTS.md
 agent.md
+.claude/
+
+# E2E test artifacts (large binary files)
+tests/e2e/.kernel/

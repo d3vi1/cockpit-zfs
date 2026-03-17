@@ -1,0 +1,65 @@
+FROM docker.io/library/ubuntu:25.10
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install cockpit, ZFS userspace, SSH, systemd, and Node.js
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      cockpit \
+      cockpit-ws \
+      cockpit-bridge \
+      zfsutils-linux \
+      python3-pyzfs \
+      openssh-server \
+      systemd \
+      systemd-sysv \
+      dbus \
+      sudo \
+      curl \
+      ca-certificates \
+      iproute2 \
+      kmod \
+      mount \
+      rsync \
+      nodejs \
+      npm && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install pre-built ZFS kernel modules (built against custom kernel 6.18.5 with CONFIG_MODULES=y)
+# These were compiled from OpenZFS 2.4.1 source against Linux 6.18.5 (Kata kernel config + modules)
+COPY tests/e2e/.kernel/modules/6.18.5/ /lib/modules/6.18.5/
+
+# Configure ZFS modules to load on boot
+RUN echo "spl" > /etc/modules-load.d/zfs.conf && \
+    echo "zfs" >> /etc/modules-load.d/zfs.conf
+
+# Create test user with password and sudo access
+RUN useradd -m -s /bin/bash testuser && \
+    echo 'testuser:testpass' | chpasswd && \
+    usermod -aG sudo testuser && \
+    echo 'testuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/testuser
+
+# Configure Cockpit: allow unencrypted and all origins
+RUN mkdir -p /etc/cockpit && \
+    printf '[WebService]\nAllowUnencrypted = true\nOrigins = *\n' > /etc/cockpit/cockpit.conf
+
+# Configure SSH
+RUN mkdir -p /run/sshd && \
+    sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    echo 'root:testpass' | chpasswd
+
+# Enable services for systemd
+RUN systemctl enable cockpit.socket && \
+    systemctl enable ssh
+
+# Copy the ZFS fixture script
+COPY tests/e2e/fixtures/setup-zfs-fixtures.sh /usr/local/bin/setup-zfs-fixtures.sh
+RUN chmod +x /usr/local/bin/setup-zfs-fixtures.sh
+
+# Expose ports
+EXPOSE 9090 22
+
+# systemd as PID 1
+CMD ["/sbin/init"]
