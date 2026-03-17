@@ -1,5 +1,32 @@
-/* Outlines for debugging CSS */
+/* zfs.css — Minimal utility classes for cockpit-zfs React */
 
-/* div, td, th, tr, table, ul, li, p, h1, h2, h3, button, input {
-  border: 1px dotted gray;
-} */
+/* ── Status colors (used by statusColors.ts) ── */
+.zfs-status-online    { color: var(--pf-t--global--color--status--success--default); }
+.zfs-status-degraded  { color: var(--pf-t--global--color--status--warning--default); }
+.zfs-status-faulted   { color: var(--pf-t--global--color--status--danger--default); }
+.zfs-status-replacing { color: var(--pf-t--global--color--status--warning--default); }
+
+/* ── Capacity text colors ── */
+.zfs-capacity-ok      { color: var(--pf-t--global--color--status--success--default); }
+.zfs-capacity-warning { color: var(--pf-t--global--color--status--warning--default); }
+.zfs-capacity-danger  { color: var(--pf-t--global--color--status--danger--default); }
+.zfs-capacity-unknown { color: var(--pf-t--global--color--status--info--default); }
+
+/* ── Capacity background colors ── */
+.zfs-capacity-bg-ok      { background-color: var(--pf-t--global--color--status--success--default); }
+.zfs-capacity-bg-warning { background-color: var(--pf-t--global--color--status--warning--default); }
+.zfs-capacity-bg-danger  { background-color: var(--pf-t--global--color--status--danger--default); }
+.zfs-capacity-bg-unknown { background-color: var(--pf-t--global--color--status--info--default); }
+
+/* ── Text utility (used by PoolCapacityRing.tsx) ── */
+.zfs-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Page fill (Cockpit standard root class) ── */
+.ct-page-fill {
+  height: 100%;
+  width: 100%;
+}
